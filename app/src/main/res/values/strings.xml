@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Note2Map</string>
+
+    <string name="time_activity_main">TimePicker</string>
+    <string name="date_activity_main">DatePicker</string>
+    <string name="action_settings">Settings</string>
+    <string name="pick_time">Set Time</string>
+    <string name="pick_date">Set Date</string>
+</resources>
