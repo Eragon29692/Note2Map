@@ -10,29 +10,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.neu.madcourse.priyankabh.note2map.MainActivity">
 
-
     <Button
-        android:id="@+id/timePicker"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/menu_button_margin"
-        android:padding="@dimen/menu_button_padding"
-        android:text="@string/time_activity_main"
-        android:textColor="@color/gray_color"
-        android:background="@color/black_color"/>
-
-    <Button
-        android:id="@+id/datePicker"
+        android:id="@+id/eventTimePicker"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="@dimen/menu_button_padding"
-        android:text="@string/date_activity_main"
+        android:text="@string/eventTime_activity_main"
         android:textColor="@color/gray_color"
         android:background="@color/black_color"
         android:layout_marginTop="31dp"
-        android:layout_below="@+id/timePicker"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 

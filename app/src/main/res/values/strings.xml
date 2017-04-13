@@ -3,7 +3,10 @@
 
     <string name="time_activity_main">TimePicker</string>
     <string name="date_activity_main">DatePicker</string>
+    <string name="eventTime_activity_main">EventTimePicker</string>
     <string name="action_settings">Settings</string>
     <string name="pick_time">Set Time</string>
     <string name="pick_date">Set Date</string>
+    <string name="startTime">Start Time</string>
+    <string name="endTime">End Time</string>
 </resources>

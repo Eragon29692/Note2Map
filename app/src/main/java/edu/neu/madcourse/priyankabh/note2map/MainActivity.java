@@ -14,22 +14,15 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button timePicker = (Button) findViewById(R.id.timePicker);
-        timePicker.setOnClickListener(new View.OnClickListener() {
+        Button evenTimePicker = (Button) findViewById(R.id.eventTimePicker);
+        evenTimePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, TimePickerActivity.class);
+                Intent intent = new Intent(MainActivity.this, SelectEventTimeActivity.class);
                 startActivity(intent);
             }
         });
 
-        Button datePicker = (Button) findViewById(R.id.datePicker);
-        datePicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, DatePickerActivity.class);
-                startActivity(intent);
-            }
-        });
+        startService(new Intent(this,MyLocationService.class));
     }
 }
