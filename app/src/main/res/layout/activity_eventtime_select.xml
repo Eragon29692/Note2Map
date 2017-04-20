@@ -111,5 +111,17 @@
             android:layout_marginTop="10dp" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/continue_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Continue"
+        android:textColor="@android:color/background_light"
+        android:layout_marginTop="10dp"
+        android:fontFamily="casual"
+        android:textSize="18sp"
+        android:textStyle="normal|bold"
+        android:background="@android:color/background_dark" />
 
 </LinearLayout>
