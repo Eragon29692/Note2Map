@@ -17,7 +17,6 @@ import android.widget.TimePicker;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 /**
@@ -45,12 +44,8 @@ public class SelectEventTimeActivity extends Activity {
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            Calendar datetime = Calendar.getInstance();
-            datetime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            datetime.set(Calendar.MINUTE, minute);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH : mm ");
-
-            startTime.setText(simpleDateFormat.format(datetime.getTime()));
+            startTime.setText(new StringBuilder().append(hourOfDay).append(" : ")
+                    .append(minute));
         }
     }
 
@@ -69,14 +64,14 @@ public class SelectEventTimeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_eventtime_select);
 
-        Thread myThread = null;
-
-        Runnable myRunnableThread = new CountDownRunner();
-        myThread= new Thread(myRunnableThread);
-        myThread.start();
-
         startTime = (TextView) findViewById(R.id.startValue);
         endTime = (TextView) findViewById(R.id.endValue);
+
+        Calendar datetime = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH : mm ");
+
+        endTime.setText(simpleDateFormat.format(datetime.getTime()));
+        startTime.setText(simpleDateFormat.format(datetime.getTime()));
 
         datePicker = (TextView) findViewById(R.id.dateValue);
         String date = new SimpleDateFormat("MM/dd/yy").format(new Date());
@@ -88,38 +83,7 @@ public class SelectEventTimeActivity extends Activity {
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
-    public class CountDownRunner implements Runnable{
-        // @Override
-        public void run() {
-            while(!Thread.currentThread().isInterrupted()){
-                try {
-                    doWork();
-                    Thread.sleep(1000); // Pause of 1 Second
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }catch(Exception e){
-                }
-            }
-        }
 
-
-    }
-
-    public void doWork() {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                try{
-                   // TextView txtCurrentTime= (TextView)findViewById(R.id.myText);
-                    Date dt = new Date();
-                    int hours = dt.getHours();
-                    int minutes = dt.getMinutes();
-                    String curTime = hours + ":" + minutes ;
-                    startTime.setText(curTime);
-                    endTime.setText(curTime);
-                }catch (Exception e) {}
-            }
-        });
-    }
 /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

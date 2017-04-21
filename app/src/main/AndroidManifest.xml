@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.neu.madcourse.priyankabh.note2map">
 
+    package="edu.neu.madcourse.priyankabh.note2map">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +29,7 @@
             android:theme="@android:style/Theme.Holo.Light.NoActionBar"></activity>
 
         <service android:name=".MyLocationService" />
+
         <service android:name=".InstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -37,6 +42,7 @@
         </service>
 
         <activity android:name=".Note2MapFriendActivity"></activity>
+
     </application>
 
 </manifest>
