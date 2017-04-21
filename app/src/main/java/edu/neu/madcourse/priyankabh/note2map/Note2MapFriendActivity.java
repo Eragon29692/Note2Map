@@ -38,6 +38,7 @@ public class Note2MapFriendActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_friend);
         setSupportActionBar(myToolbar);
 
+        getSupportActionBar().setTitle("Friends");
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,

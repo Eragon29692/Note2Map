@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:gravity="center"
+    tools:context="edu.neu.madcourse.priyankabh.note2map.Note2MapChooseUsername">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:text="Pick A Username"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:textStyle="normal|bold" />
+
+        <EditText
+            android:id="@+id/n2m_choose_username_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="casual"
+            android:gravity="center_vertical"
+            android:inputType="text"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="normal|bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:id="@+id/n2m_choose_username_error"
+            android:visibility="invisible"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="Username already exists"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/holo_red_light"
+            android:textSize="14sp"
+            android:textStyle="normal|bold" />
+
+        <Button
+            android:id="@+id/n2m_choose_username_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:background="@color/black_color"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:text="Sign up"
+            android:textAllCaps="true"
+            android:textColor="@color/colorWhite"
+            android:textStyle="normal|bold"
+            android:onClick="onClickChooseUsername"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
