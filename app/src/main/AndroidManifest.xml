@@ -7,7 +7,6 @@
         android:required="true"/>
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
 
     <application
@@ -28,15 +27,17 @@
             android:theme="@android:style/Theme.Holo.Light.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
+
+        <activity android:name="edu.neu.madcourse.priyankabh.note2map.Note2MapSearchLocationActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+
         <service android:name=".MyLocationService" />
 
         <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
-        <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD4p6aY-KLjZ6K6YFtigPQ6Qfu-qqaZX5k"/>
-
+            android:value="AIzaSyBWHu2v4RKujUpKxPH53UvkIVdhDrnolCU" />
     </application>
+
 </manifest>
