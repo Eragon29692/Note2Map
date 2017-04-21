@@ -150,7 +150,7 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/relative_layout"
+            android:id="@+id/n2m_main_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="start" >
