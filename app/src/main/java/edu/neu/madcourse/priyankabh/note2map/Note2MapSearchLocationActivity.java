@@ -82,7 +82,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 
         //Animating the camera
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+//        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
     }
 
@@ -99,7 +99,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 
         //Animating the camera
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        //googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
@@ -236,13 +236,6 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         return;
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
     @Override
     public void onMapReady(GoogleMap gMap) {
