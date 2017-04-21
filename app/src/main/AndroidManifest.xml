@@ -23,12 +23,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SelectEventTimeActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar"></activity>
+
+        <activity android:name="edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity android:name="edu.neu.madcourse.priyankabh.note2map.Note2MapSearchLocationActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
 
         <service android:name=".MyLocationService" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBWHu2v4RKujUpKxPH53UvkIVdhDrnolCU" />
 
         <service android:name=".InstanceIDService">
             <intent-filter>

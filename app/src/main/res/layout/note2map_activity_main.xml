@@ -145,6 +145,20 @@
                     android:textColor="@android:color/background_light"
                     android:textSize="18sp"
                     android:textStyle="normal|bold" />
+
+                <Button
+                    android:id="@+id/n2m_search_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Search Location"
+                    android:textColor="@android:color/background_light"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="casual"
+                    android:textSize="18sp"
+                    android:textStyle="normal|bold"
+                    android:background="@android:color/background_dark" />
+
             </LinearLayout>
 
         </LinearLayout>
