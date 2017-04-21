@@ -1,26 +1,38 @@
 package edu.neu.madcourse.priyankabh.note2map;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -29,7 +41,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-public class Note2MapMainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+import java.util.ArrayList;
+
+public class Note2MapMainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 200;
 
     private GoogleApiClient mGoogleApiClient;
@@ -42,6 +56,10 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
     private String setLongitude = "";
     private TextView mCoordinatesText;
     private Button setCoordinates;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private ListView mDrawerList;
+    private ArrayList<String> drawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +68,63 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
         mLatitudeText = (EditText) findViewById(R.id.n2m_latitude_text);
         mLongitudeText = (EditText) findViewById(R.id.n2m_longtitude_text);
         mCoordinatesText = (TextView) findViewById(R.id.n2m_coordinates);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.n2m_drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.n2m_left_drawer);
+        drawerList = new ArrayList<>();
+        drawerList.add("Notes");
+        drawerList.add("Friends");
+
+        //toolbar
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar);
+        setSupportActionBar(myToolbar);
+
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.n2m_drawer_list_item, drawerList));
+
+
+
+        //onclick action
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View v, int position,
+                                    long arg3) {
+                if(position == 1) {
+                    Intent intent = new Intent(Note2MapMainActivity.this, Note2MapFriendActivity.class);
+                    startActivity(intent);
+                    Note2MapMainActivity.this.finish();
+                }
+            }
+        });
+
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.string.drawer_open,  /* "open drawer" description */
+                R.string.drawer_close  /* "close drawer" description */
+        ) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle("Notes");
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle(getTitle());
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+
 
 
         mLatitudeText.addTextChangedListener(new TextWatcher() {
@@ -101,7 +176,7 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
             }
         });
 
-        Button evenTimePicker = (Button) findViewById(R.id.eventTimePicker);
+        Button evenTimePicker = (Button) findViewById(R.id.n2m_eventTimePicker);
         evenTimePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,7 +210,19 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
                         .addApi(LocationServices.API)
                         .build();
             }
-            //startService(new Intent(this,MyLocationService.class));
+            startService(new Intent(this,MyLocationService.class));
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+            Intent alarmIntent = new Intent(this, MyLocationService.class);
+            PendingIntent pending = PendingIntent.getService(this, 0, alarmIntent, 0);
+            if (alarmManager!= null) {
+                alarmManager.cancel(pending);
+            }
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() +
+                            60 * 1000, 60 * 1000, pending);
+
         }
     }
 
@@ -144,6 +231,7 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        Log.d("ssssssssssss","connectMain");
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mRequestingLocationUpdates) {
@@ -155,12 +243,16 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
     }
 
     protected void onStart() {
-        mGoogleApiClient.connect();
+        if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
         super.onStart();
     }
 
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
         super.onStop();
     }
 
@@ -192,7 +284,7 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
     @Override
     protected void onPause() {
         super.onPause();
-        if (mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             stopLocationUpdates();
         }
     }
@@ -200,7 +292,7 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
     @Override
     public void onResume() {
         super.onResume();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
     }
@@ -236,6 +328,27 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
+                    createLocationRequest();
+                    // Create an instance of GoogleAPIClient.
+                    if (mGoogleApiClient == null) {
+                        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                                .addConnectionCallbacks(this)
+                                .addOnConnectionFailedListener(this)
+                                .addApi(LocationServices.API)
+                                .build();
+                    }
+                    startService(new Intent(this,MyLocationService.class));
+
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                    Intent alarmIntent = new Intent(this, MyLocationService.class);
+                    PendingIntent pending = PendingIntent.getService(this, 0, alarmIntent, 0);
+                    if (alarmManager!= null) {
+                        alarmManager.cancel(pending);
+                    }
+                    alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            SystemClock.elapsedRealtime() +
+                                    60 * 1000, 60 * 1000, pending);
 
                 } else {
                     finish();
@@ -247,6 +360,35 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
         }
     }
 
+
+
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
@@ -256,4 +398,7 @@ public class Note2MapMainActivity extends Activity implements GoogleApiClient.Co
     public void onConnectionSuspended(int i) {
 
     }
+
+
+
 }
