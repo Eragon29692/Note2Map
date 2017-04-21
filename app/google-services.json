@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "169105903033",
+    "firebase_url": "https://finalproject-duyvu.firebaseio.com",
+    "project_id": "finalproject-duyvu",
+    "storage_bucket": "finalproject-duyvu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169105903033:android:aea65991acd9abfc",
+        "android_client_info": {
+          "package_name": "edu.neu.madcourse.priyankabh.note2map"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "169105903033-cngmgjcnehbh6fs142d6upvtuilfdieq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx_S_LWSNwJnqKm9IinQ2826FTH8Pnv4E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

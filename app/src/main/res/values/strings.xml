@@ -9,7 +9,6 @@
     <string name="pick_date">Set Date</string>
     <string name="startTime">Start Time</string>
     <string name="endTime">End Time</string>
-
-    <string name="find">Find</string>
-    <string name="hint">Enter Place</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>

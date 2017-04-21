@@ -84,6 +84,7 @@ public class SelectEventTimeActivity extends Activity {
     }
 
 
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -105,7 +106,7 @@ public class SelectEventTimeActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     public static class EndTimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 

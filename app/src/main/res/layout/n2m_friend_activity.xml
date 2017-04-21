@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/n2m_friend_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="edu.neu.madcourse.priyankabh.note2map.Note2MapFriendActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/n2m_my_toolbar_friend"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/background_light"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/n2m_drawer_layout_friend"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Your content layout goes here -->
+
+
+        <ListView
+            android:id="@+id/n2m_left_drawer_friend"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="#c5111111"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp" />
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
