@@ -82,7 +82,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 
         //Animating the camera
-//        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
     }
 
@@ -99,7 +99,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 
         //Animating the camera
-        //googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
