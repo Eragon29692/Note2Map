@@ -79,7 +79,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         markerOptions.title("New Marker");
 
         googleMap.addMarker(markerOptions);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 
         //Animating the camera
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -96,7 +96,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         markerOptions.title("New Marker");
 
         googleMap.addMarker(markerOptions);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 
         //Animating the camera
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -236,12 +236,11 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         return;
     }
 
-
     @Override
     public void onMapReady(GoogleMap gMap) {
         googleMap = gMap;
         // Add a marker in Sydney and move the camera
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         googleMap.setMyLocationEnabled(true);
