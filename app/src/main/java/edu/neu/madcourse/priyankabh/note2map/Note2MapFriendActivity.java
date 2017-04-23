@@ -142,8 +142,14 @@ public class Note2MapFriendActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.n2m_listviewlayout_friends);
 
+
         Note2MapCustomAdaptorForFriends customAdapter = new Note2MapCustomAdaptorForFriends(this, currentUser);
         listView.setAdapter(customAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -172,6 +178,7 @@ public class Note2MapFriendActivity extends AppCompatActivity {
             intent.putExtra("username", usernames);
             intent.putExtra("currentUser", currentUser);
             startActivity(intent);
+            this.finish();
         }
 
         return super.onOptionsItemSelected(item);

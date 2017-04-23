@@ -134,10 +134,19 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle your other action bar items...
         if(item.getItemId() == android.R.id.home){
+            Intent intent = new Intent(Note2MapAllUsersActivity.this, Note2MapFriendActivity.class);
+            startActivity(intent);
             Note2MapAllUsersActivity.this.finish();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Note2MapAllUsersActivity.this, Note2MapFriendActivity.class);
+        startActivity(intent);
+        Note2MapAllUsersActivity.this.finish();
     }
 
 }
