@@ -70,7 +70,8 @@
             android:textAllCaps="true"
             android:textColor="@color/colorWhite"
             android:textStyle="normal|bold"
-            android:onClick="onClickChooseUsername"/>
+            android:onClick="onClickChooseUsername"
+            android:textSize="24sp" />
 
     </LinearLayout>
 

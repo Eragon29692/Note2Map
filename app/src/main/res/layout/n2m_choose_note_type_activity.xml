@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/n2m_choose_note_type_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="edu.neu.madcourse.priyankabh.note2map.Note2MapMainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/n2m_my_toolbar_choose_note_type"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/background_light"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="280dp"
+            android:layout_height="2dp"
+            android:background="@android:color/black"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/n2m_choose_event_type_button"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:text="EVENT          >"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/black"
+            android:textSize="36sp"
+            android:textStyle="normal|bold" />
+        <View
+            android:layout_width="280dp"
+            android:layout_height="2dp"
+            android:background="@android:color/black"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/n2m_choose_reminder_type_button"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:text="REMINDER    >"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/black"
+            android:textSize="36sp"
+            android:textStyle="normal|bold" />
+        <View
+            android:layout_width="280dp"
+            android:layout_height="2dp"
+            android:background="@android:color/black"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/n2m_choose_direction_type_button"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:text="DIRECTION    >"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/black"
+            android:textSize="36sp"
+            android:textStyle="normal|bold" />
+        <View
+            android:layout_width="280dp"
+            android:layout_height="2dp"
+            android:background="@android:color/black"/>
+
+</LinearLayout>
+    </LinearLayout>
