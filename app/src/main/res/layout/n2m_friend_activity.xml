@@ -25,6 +25,13 @@
 
         <!-- Your content layout goes here -->
 
+        <ListView
+            android:id="@+id/n2m_listviewlayout_friends"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/material_blue_grey_800"
+            android:dividerHeight="1dp"
+            android:footerDividersEnabled="false" />
 
         <ListView
             android:id="@+id/n2m_left_drawer_friend"

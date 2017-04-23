@@ -29,6 +29,7 @@
             android:name=".SelectEventTimeActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Light.NoActionBar"></activity>
+
         <activity
             android:name=".Note2MapSearchLocationActivity"
             android:screenOrientation="portrait"
@@ -51,8 +52,15 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".Note2MapFriendActivity" />
-        <activity android:name=".Note2MapChooseUsername"></activity>
+        <activity android:name=".Note2MapFriendActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".Note2MapChooseUsername"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity android:name=".Note2MapAllUsersActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
+
     </application>
 
 </manifest>

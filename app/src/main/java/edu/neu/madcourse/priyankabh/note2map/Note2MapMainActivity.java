@@ -26,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -48,6 +49,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
@@ -70,6 +72,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private ListView mDrawerList;
     private ArrayList<String> drawerList;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
                                     long arg3) {
                 if(position == 1) {
                     Intent intent = new Intent(Note2MapMainActivity.this, Note2MapFriendActivity.class);
+                    intent.putExtra("currentUser", currentUser);
                     startActivity(intent);
                     Note2MapMainActivity.this.finish();
                 }
@@ -158,7 +162,15 @@ public class Note2MapMainActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot snapshot) {
                     String token = FirebaseInstanceId.getInstance().getToken();
                     if (snapshot.exists()) {
-                        Log.d("Main Activity","User Exist");
+                        currentUser = new User();
+                        Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
+                        for(Map.Entry<String,Object> entry: map.entrySet()){
+                            if(entry.getKey().toString().equals("username")) {
+                                currentUser.username = (String) entry.getValue();
+                            } else{
+                                currentUser.friends = (ArrayList<String>) entry.getValue();
+                            }
+                        }
                         startService(new Intent(Note2MapMainActivity.this,MyLocationService.class));
 
                         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -202,6 +214,15 @@ public class Note2MapMainActivity extends AppCompatActivity {
                             String token = FirebaseInstanceId.getInstance().getToken();
                             if (snapshot.exists()) {
                                 Log.d("Main Activity","User Exist");
+                                currentUser = new User();
+                                Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
+                                for(Map.Entry<String,Object> entry: map.entrySet()){
+                                    if(entry.getKey().toString().equals("username")) {
+                                        currentUser.username = (String) entry.getValue();
+                                    } else{
+                                        currentUser.friends = (ArrayList<String>) entry.getValue();
+                                    }
+                                }
                                 startService(new Intent(Note2MapMainActivity.this,MyLocationService.class));
 
                                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -266,6 +287,13 @@ public class Note2MapMainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.add_friend);
+//        item.setVisible(true);
+        return super.onCreateOptionsMenu(menu);
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
