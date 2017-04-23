@@ -62,7 +62,7 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
 
         ArrayList<String> namesWithoutCurrentUser = usernames;
         namesWithoutCurrentUser.remove(currentUser.username.toLowerCase());
-        Note2MapCustomAdaptorForAllUsers customAdapter = new Note2MapCustomAdaptorForAllUsers(this, namesWithoutCurrentUser, currentUser);
+        customAdapter = new Note2MapCustomAdaptorForAllUsers(this, namesWithoutCurrentUser, currentUser);
         listView.setAdapter(customAdapter);
 
     }
@@ -135,6 +135,7 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
         // Handle your other action bar items...
         if(item.getItemId() == android.R.id.home){
             Intent intent = new Intent(Note2MapAllUsersActivity.this, Note2MapFriendActivity.class);
+            intent.putExtra("currentUser", currentUser);
             startActivity(intent);
             Note2MapAllUsersActivity.this.finish();
         }
@@ -145,6 +146,7 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(Note2MapAllUsersActivity.this, Note2MapFriendActivity.class);
+        intent.putExtra("currentUser", currentUser);
         startActivity(intent);
         Note2MapAllUsersActivity.this.finish();
     }
