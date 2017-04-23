@@ -38,16 +38,11 @@
         </activity>
         <activity
             android:name=".SelectEventTimeActivity"
-<<<<<<< HEAD
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar"></activity>
+            android:screenOrientation="portrait"></activity>
 
-=======
-            android:screenOrientation="portrait"/>
->>>>>>> 817988ee12967918eb9dbe83671790d30b31404e
         <activity
             android:name=".Note2MapSearchLocationActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <service android:name=".MyLocationService" />
 
@@ -55,7 +50,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBWHu2v4RKujUpKxPH53UvkIVdhDrnolCU" />
 
-<<<<<<< HEAD
         <service android:name=".InstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -67,24 +61,19 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".Note2MapFriendActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".Note2MapChooseUsername"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
-        <activity android:name=".Note2MapAllUsersActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        <activity
+            android:name=".Note2MapFriendActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Note2MapChooseUsername"
             android:screenOrientation="portrait">
         </activity>
-
-=======
-        <activity android:name=".Note2MapFriendActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Note2MapChooseUsername"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Note2MapChooseNoteType"
-            android:screenOrientation="portrait">
-        </activity>
->>>>>>> 817988ee12967918eb9dbe83671790d30b31404e
+        <activity
+            android:name=".Note2MapAllUsersActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Note2MapChooseNoteType"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

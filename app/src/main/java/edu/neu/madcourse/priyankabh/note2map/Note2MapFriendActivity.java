@@ -167,7 +167,7 @@ public class Note2MapFriendActivity extends AppCompatActivity {
             return true;
         }
         // Handle your other action bar items...
-        if(item.getItemId() == R.id.add_friend){
+        if(item.getItemId() == R.id.n2m_friend_add_friend){
             Intent intent = new Intent(Note2MapFriendActivity.this, Note2MapAllUsersActivity.class);
             intent.putExtra("username", usernames);
             intent.putExtra("currentUser", currentUser);
@@ -186,7 +186,7 @@ public class Note2MapFriendActivity extends AppCompatActivity {
 
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.friend_menu, menu);
-        MenuItem item = menu.findItem(R.id.add_friend);
+        MenuItem item = menu.findItem(R.id.n2m_friend_add_friend);
         item.setVisible(true);
 
         MenuItem search = menu.findItem(R.id.n2m_action_search);

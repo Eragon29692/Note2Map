@@ -161,15 +161,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     if (snapshot.exists()) {
-                        currentUser = new User();
-                        Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
-                        for(Map.Entry<String,Object> entry: map.entrySet()){
-                            if(entry.getKey().toString().equals("username")) {
-                                currentUser.username = (String) entry.getValue();
-                            } else{
-                                currentUser.friends = (ArrayList<String>) entry.getValue();
-                            }
-                        }
+                        currentUser = snapshot.getValue(User.class);
                         startService(new Intent(Note2MapMainActivity.this,MyLocationService.class));
 
                         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -212,15 +204,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot snapshot) {
                             if (snapshot.exists()) {
                                 Log.d("Main Activity","User Exist");
-                                currentUser = new User();
-                                Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
-                                for(Map.Entry<String,Object> entry: map.entrySet()){
-                                    if(entry.getKey().toString().equals("username")) {
-                                        currentUser.username = (String) entry.getValue();
-                                    } else{
-                                        currentUser.friends = (ArrayList<String>) entry.getValue();
-                                    }
-                                }
+                                currentUser = snapshot.getValue(User.class);
                                 startService(new Intent(Note2MapMainActivity.this,MyLocationService.class));
 
                                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

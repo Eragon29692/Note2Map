@@ -61,7 +61,7 @@ public class Note2MapChooseUsername extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 User user = dataSnapshot.getValue(User.class);
                 usernames.add(user.username);
-                Log.d("log users", usernames.toString());
+                Log.d("log users", usernames.toString().toLowerCase());
             }
 
             @Override
@@ -87,7 +87,7 @@ public class Note2MapChooseUsername extends AppCompatActivity {
             public void onClick(View view) {
                 usernameEditText = (EditText) findViewById(R.id.n2m_choose_username_edit_text);
                 String username = usernameEditText.getText().toString();
-                if (usernames.contains(username) || username.equals("")) {
+                if (usernames.contains(username.toLowerCase()) || username.equals("")) {
                     errorTextView = (TextView) findViewById(R.id.n2m_choose_username_error);
                     errorTextView.setVisibility(View.VISIBLE);
                     usernameEditText.setText("");

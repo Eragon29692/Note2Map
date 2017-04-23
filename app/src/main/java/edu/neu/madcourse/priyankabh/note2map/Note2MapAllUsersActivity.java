@@ -100,7 +100,7 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.friend_menu, menu);
 
-        MenuItem item = menu.findItem(R.id.add_friend);
+        MenuItem item = menu.findItem(R.id.n2m_friend_add_friend);
         item.setVisible(false);
 
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.n2m_action_search));
