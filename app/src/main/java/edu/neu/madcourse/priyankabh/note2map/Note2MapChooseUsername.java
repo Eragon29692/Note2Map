@@ -86,7 +86,7 @@ public class Note2MapChooseUsername extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 usernameEditText = (EditText) findViewById(R.id.n2m_choose_username_edit_text);
-                String username = usernameEditText.getText().toString().toLowerCase();
+                String username = usernameEditText.getText().toString();
                 if (usernames.contains(username) || username.equals("")) {
                     errorTextView = (TextView) findViewById(R.id.n2m_choose_username_error);
                     errorTextView.setVisibility(View.VISIBLE);
