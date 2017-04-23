@@ -35,7 +35,7 @@
             android:layout_height="25dp"
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
-            android:onClick="onClickRemoveFriend" />
+            android:onClick="onClickRemoveFriend (Note2MapFriendActivity)" />
 
     </LinearLayout>
 </LinearLayout>

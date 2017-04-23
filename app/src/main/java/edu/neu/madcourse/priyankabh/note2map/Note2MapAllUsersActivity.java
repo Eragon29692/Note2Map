@@ -7,10 +7,13 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,6 +36,7 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
     private ArrayList<String> usernames;
     private User currentUser;
     private ListView listView;
+    private Note2MapCustomAdaptorForAllUsers customAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -43,20 +47,9 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_allusers);
         setSupportActionBar(myToolbar);
 
-        getSupportActionBar().setTitle("Friends");
+        getSupportActionBar().setTitle("Manage Friends");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Note2MapAllUsersActivity.this, Note2MapFriendActivity.class);
-                intent.putExtra("currentUser", currentUser);
-                startActivity(intent);
-                Note2MapAllUsersActivity.this.finish();
-            }
-        });
 
         listView = (ListView) findViewById(R.id.n2m_listviewlayout_allusers);
 
@@ -91,8 +84,11 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
             Log.d("onClickAddFriend",str);
         }
 
-        Note2MapCustomAdaptorForAllUsers customAdapter = new Note2MapCustomAdaptorForAllUsers(this, usernames, currentUser);
+        customAdapter = new Note2MapCustomAdaptorForAllUsers(this, usernames, currentUser);
         listView.setAdapter(customAdapter);
+
+        // smart search
+        listView.setTextFilterEnabled(true);
     }
 
     @Override
@@ -106,7 +102,42 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.n2m_action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setIconifiedByDefault(false);
+
+        EditText searchPlate = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+
+        searchPlate.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                // When user changed the Text
+                Note2MapAllUsersActivity.this.customAdapter.getFilter().filter(cs.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
         return true;
 
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle your other action bar items...
+        if(item.getItemId() == android.R.id.home){
+            Note2MapAllUsersActivity.this.finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }

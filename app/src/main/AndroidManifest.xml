@@ -38,7 +38,8 @@
         </activity>
         <activity
             android:name=".SelectEventTimeActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+        </activity>
 
         <activity
             android:name=".Note2MapSearchLocationActivity"
@@ -69,11 +70,13 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".Note2MapAllUsersActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity
             android:name=".Note2MapChooseNoteType"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".Note2MapAllUsersActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
     </application>
 
 </manifest>

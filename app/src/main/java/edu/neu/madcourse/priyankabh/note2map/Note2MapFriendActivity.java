@@ -172,8 +172,6 @@ public class Note2MapFriendActivity extends AppCompatActivity {
             intent.putExtra("username", usernames);
             intent.putExtra("currentUser", currentUser);
             startActivity(intent);
-            Note2MapFriendActivity.this.finish();
-
         }
 
         return super.onOptionsItemSelected(item);
@@ -206,9 +204,6 @@ public class Note2MapFriendActivity extends AppCompatActivity {
         currentUser.friends.remove(newFriend.toLowerCase());
 
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
-        for(String str: currentUser.friends){
-            Log.d("onClickAddFriend",str);
-        }
 
         Note2MapCustomAdaptorForFriends customAdapter = new Note2MapCustomAdaptorForFriends(this, currentUser);
         listView.setAdapter(customAdapter);
