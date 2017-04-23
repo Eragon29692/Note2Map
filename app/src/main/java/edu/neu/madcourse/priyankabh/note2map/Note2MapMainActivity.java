@@ -1,31 +1,24 @@
 package edu.neu.madcourse.priyankabh.note2map;
 
-import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,11 +28,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,8 +38,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
-
-import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 public class Note2MapMainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 200;
@@ -64,6 +52,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
     private String setLongitude = "";
     private TextView mCoordinatesText;
     private DatabaseReference mDatabase;
+    Button quitButton;
     private ValueEventListener valueEventListener;
     private Button setCoordinates;
     private DrawerLayout mDrawerLayout;
@@ -105,6 +94,16 @@ public class Note2MapMainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        quitButton = (Button) findViewById(R.id.n2m_note_quitButton);
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Note2MapMainActivity.this.finish();
+                System.exit(0);
+            }
+        });
+
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
@@ -156,7 +155,6 @@ public class Note2MapMainActivity extends AppCompatActivity {
             mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    String token = FirebaseInstanceId.getInstance().getToken();
                     if (snapshot.exists()) {
                         Log.d("Main Activity","User Exist");
                         startService(new Intent(Note2MapMainActivity.this,MyLocationService.class));
@@ -168,7 +166,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
                         if (alarmManager!= null) {
                             alarmManager.cancel(pending);
                         }
-                        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                                 SystemClock.elapsedRealtime() +
                                         60 * 1000, 60 * 1000, pending);
                     } else {
@@ -199,7 +197,6 @@ public class Note2MapMainActivity extends AppCompatActivity {
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            String token = FirebaseInstanceId.getInstance().getToken();
                             if (snapshot.exists()) {
                                 Log.d("Main Activity","User Exist");
                                 startService(new Intent(Note2MapMainActivity.this,MyLocationService.class));
@@ -211,7 +208,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
                                 if (alarmManager!= null) {
                                     alarmManager.cancel(pending);
                                 }
-                                alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                                alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                                         SystemClock.elapsedRealtime() +
                                                 60 * 1000, 60 * 1000, pending);
                             } else {
@@ -262,10 +259,24 @@ public class Note2MapMainActivity extends AppCompatActivity {
             return true;
         }
         // Handle your other action bar items...
-
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.n2m_note_action_menu_new:
+                Intent intent = new Intent(Note2MapMainActivity.this, Note2MapChooseNoteType.class);
+                this.startActivity(intent);
+                break;
+            default:
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //MenuInflater inflater = getMenuInflater();
+        getMenuInflater().inflate(R.menu.n2m_note_action_menu, menu);
+        return true;
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////

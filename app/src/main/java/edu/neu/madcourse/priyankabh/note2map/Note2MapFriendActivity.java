@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Note2MapFriendActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private ListView mDrawerList;
     private ArrayList<String> drawerList;
+    private Button quitButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,15 @@ public class Note2MapFriendActivity extends AppCompatActivity {
                     startActivity(intent);
                     Note2MapFriendActivity.this.finish();
                 }
+            }
+        });
+
+        quitButton = (Button) findViewById(R.id.n2m_friend_quitButton);
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Note2MapFriendActivity.this.finish();
+                System.exit(0);
             }
         });
 

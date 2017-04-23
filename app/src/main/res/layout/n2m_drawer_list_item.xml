@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/n2m_rowTextView"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:paddingLeft="10dp"
+    android:paddingLeft="20dp"
     android:text="Test"
     android:gravity="center_vertical"
     android:textColor="@android:color/white"
