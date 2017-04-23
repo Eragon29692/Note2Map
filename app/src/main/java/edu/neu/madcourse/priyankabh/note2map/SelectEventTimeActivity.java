@@ -1,6 +1,5 @@
 package edu.neu.madcourse.priyankabh.note2map;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -70,7 +68,7 @@ public class SelectEventTimeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_eventtime_select);
+        setContentView(R.layout.n2m_eventtime_select_activity);
         final String noteType = getIntent().getStringExtra(NOTE_TYPE);
         //toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_select_time);

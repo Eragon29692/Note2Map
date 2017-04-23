@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -40,8 +39,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import edu.neu.madcourse.priyankabh.note2map.R;
-
 public class Note2MapSearchLocationActivity extends FragmentActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     GoogleMap googleMap;
@@ -56,7 +53,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_location_n2m);
+        setContentView(R.layout.n2m_search_location_activity);
 
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.n2m_show_map);
 
@@ -65,7 +62,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
 
         AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.n2m_autoCompleteTextView);
 
-        autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_item));
+        autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.n2m_list_item));
         autoCompView.setOnItemClickListener(this);
 
     }
