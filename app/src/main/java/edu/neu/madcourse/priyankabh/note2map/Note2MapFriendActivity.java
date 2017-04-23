@@ -203,12 +203,9 @@ public class Note2MapFriendActivity extends AppCompatActivity {
 
         TextView textView = (TextView)vwParentRow.getChildAt(1);
         String newFriend = textView.getText().toString();
-        currentUser.friends.remove(newFriend.toLowerCase());
+        currentUser.friends.remove(newFriend);
 
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
-        for(String str: currentUser.friends){
-            Log.d("onClickAddFriend",str);
-        }
 
         Note2MapCustomAdaptorForFriends customAdapter = new Note2MapCustomAdaptorForFriends(this, currentUser);
         listView.setAdapter(customAdapter);

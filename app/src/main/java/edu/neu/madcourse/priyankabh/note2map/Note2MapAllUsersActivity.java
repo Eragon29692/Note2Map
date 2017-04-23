@@ -7,10 +7,13 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,6 +36,7 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
     private ArrayList<String> usernames;
     private User currentUser;
     private ListView listView;
+    private Note2MapCustomAdaptorForAllUsers customAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -84,15 +88,18 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
         TextView textView = (TextView)vwParentRow.getChildAt(1);
         String newFriend = textView.getText().toString();
         if(!newFriend.toLowerCase().equals(currentUser.username.toLowerCase()) && !currentUser.friends.contains(newFriend.toLowerCase())) {
-            currentUser.friends.add(newFriend.toLowerCase());
+            currentUser.friends.add(newFriend);
         }
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
         for(String str: currentUser.friends){
             Log.d("onClickAddFriend",str);
         }
 
-        Note2MapCustomAdaptorForAllUsers customAdapter = new Note2MapCustomAdaptorForAllUsers(this, usernames, currentUser);
+        customAdapter = new Note2MapCustomAdaptorForAllUsers(this, usernames, currentUser);
         listView.setAdapter(customAdapter);
+
+        // smart search
+        listView.setTextFilterEnabled(true);
     }
 
     @Override
@@ -106,6 +113,31 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.n2m_action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setIconifiedByDefault(false);
+
+        EditText searchPlate = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+
+        searchPlate.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                // When user changed the Text
+                Note2MapAllUsersActivity.this.customAdapter.getFilter().filter(cs.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
         return true;
 
     }
