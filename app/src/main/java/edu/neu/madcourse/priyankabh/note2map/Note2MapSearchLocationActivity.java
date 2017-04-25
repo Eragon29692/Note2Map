@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -38,13 +39,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.NoteContent;
@@ -70,6 +71,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
     private User currentUser;
     private NoteContent noteContent;
     private DatabaseReference mDatabase;
+    private String location;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -216,14 +218,14 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
 
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
-        getCoordinatesOfLocation(str);
-        // Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+        location = str;
+        getCoordinatesOfLocation();
     }
 
     public static ArrayList autocomplete(String input) {
         ArrayList resultList = null;
-
         HttpURLConnection conn = null;
+
         StringBuilder jsonResults = new StringBuilder();
         try {
             StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
@@ -319,44 +321,44 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         }
     }
 
-    public void getCoordinatesOfLocation(String location) {
+    public void getCoordinatesOfLocation() {
         MarkerOptions markerOptions;
-        List<Address> addressList = null;
+        ArrayList coordinates = null;
 
         if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
             try {
-                addressList = geocoder.getFromLocationName(location, 1);
+                coordinates = new Retrievedata().execute().get();
+            }catch (InterruptedException ie){
+                ie.printStackTrace();
+            } catch (ExecutionException ee){ee.printStackTrace();}
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(coordinates != null){
+                double latitude = Double.parseDouble(coordinates.get(0).toString());
+                double longitude = Double.parseDouble(coordinates.get(1).toString());
+                LatLng latLng = new LatLng(latitude, longitude);
+                markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title(location);
+
+                locationMarker = googleMap.addMarker(markerOptions);
+                locationMarker.showInfoWindow();
+
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                //Animating the camera
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                autoCompView.setText("");
+                // Check if no view has focus:
+                View view = this.getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+
+                preEditText = preEditText + " at "+ location+"...";
+                editTextView.setText(preEditText);
+                noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
             }
-            Address address = addressList.get(0);
-            double latitude = address.getLatitude();
-            double longitude = address.getLongitude();
-            LatLng latLng = new LatLng(latitude, longitude);
-            markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(location);
-
-            locationMarker = googleMap.addMarker(markerOptions);
-            locationMarker.showInfoWindow();
-
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-            //Animating the camera
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-            autoCompView.setText("");
-            // Check if no view has focus:
-            View view = this.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-
-            preEditText = preEditText + " at "+ location+"...";
-            editTextView.setText(preEditText);
-            noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
         }
         return;
     }
@@ -385,5 +387,53 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
 
         }
 
+    }
+
+    class Retrievedata extends AsyncTask<String, Void, ArrayList> {
+        @Override
+        protected ArrayList doInBackground(String... params) {
+            HttpURLConnection conn = null;
+            ArrayList<Object> resList = new ArrayList<Object>();
+            StringBuilder jsonResults = new StringBuilder();
+            try{
+                StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/geocode/json?address="+location.replaceAll(" ","+"));
+                sb.append("&key=" + API_KEY);
+
+                URL url = new URL(sb.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                InputStreamReader in = new InputStreamReader(conn.getInputStream());
+
+                // Load the results into a StringBuilder
+                int read;
+                char[] buff = new char[1024];
+                while ((read = in.read(buff)) != -1) {
+                    jsonResults.append(buff, 0, read);
+                }
+
+            } catch (MalformedURLException e) {
+                Log.e(LOG_TAG, "Error processing Places API URL", e);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error connecting to Places API", e);
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            }
+
+            try {
+                // Create a JSON object hierarchy from the results
+                JSONObject jsonObj = new JSONObject(jsonResults.toString());
+                JSONArray predsJsonArray = jsonObj.getJSONArray("results");
+
+                String lat = predsJsonArray.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getString("lat");
+                String lng = predsJsonArray.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getString("lng");
+                resList.add(0,lat);
+                resList.add(1,lng);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Cannot process JSON results", e);
+            }
+
+            return resList;
+        }
     }
 }
