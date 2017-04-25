@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="6dip" >
+
+        <CheckBox
+            android:id="@+id/n2m_checkbox_selectFriends"
+            style="@android:style/Widget.Holo.CompoundButton.CheckBox"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+
+        <TextView
+            android:id="@+id/n2m_textview_selectFriends"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@+id/n2m_checkbox_selectFriends"
+            android:layout_marginLeft="20dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+            android:layout_alignBottom="@+id/n2m_checkbox_selectFriends" />
+
+</RelativeLayout>

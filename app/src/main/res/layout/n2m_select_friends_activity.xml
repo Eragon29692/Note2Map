@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/n2m_friend_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="edu.neu.madcourse.priyankabh.note2map.Note2MapSelectFriendsActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/n2m_my_toolbar_select_friends"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/background_light"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
+
+    <ListView
+            android:id="@+id/n2m_listview_selectfriends"
+            android:layout_width="wrap_content"
+            android:layout_height="323dp"
+            android:divider="@color/material_blue_grey_800"
+            android:dividerHeight="1dp"
+            android:footerDividersEnabled="false" />
+
+        <Button
+            android:id="@+id/n2m_select_friends_continue_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+            android:background="@android:color/background_dark"
+            android:fontFamily="casual"
+            android:text="Continue"
+            android:layout_marginTop="20dp"
+            android:textColor="@android:color/background_light"
+            android:textSize="24sp"
+            android:textStyle="normal|bold"
+            android:onClick="onClickChooseFriend"/>
+
+    </LinearLayout>
+</LinearLayout>

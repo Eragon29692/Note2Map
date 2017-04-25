@@ -23,9 +23,9 @@
         <AutoCompleteTextView
             android:id="@+id/n2m_autoCompleteTextView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:text="Please enter your place">
+            android:layout_height="40dp"
+            android:ems="8"
+            android:hint="Please enter your place">
 
             <requestFocus />
         </AutoCompleteTextView>
@@ -35,7 +35,30 @@
             android:id="@+id/n2m_show_map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="250dp"
             tools:context=".Note2MapSearchLocationActivity" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Note:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        <EditText
+            android:id="@+id/n2m_edit_note"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/n2m_edittext_border"
+            android:gravity="top|left"
+            android:ems="5"/>
+
+        <Button
+            android:id="@+id/n2m_create_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit Note" />
+
     </LinearLayout>
+
 </LinearLayout>
