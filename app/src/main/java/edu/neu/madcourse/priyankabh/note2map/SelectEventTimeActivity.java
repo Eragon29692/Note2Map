@@ -21,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import edu.neu.madcourse.priyankabh.note2map.models.User;
+
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
 
 /**
@@ -33,6 +35,8 @@ public class SelectEventTimeActivity extends AppCompatActivity {
     public static TextView startTime;
     public static TextView endTime;
     private Button continueButton;
+    private Bundle b;
+    private User currentUser;
 
     public static class StartTimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
@@ -69,6 +73,12 @@ public class SelectEventTimeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_eventtime_select_activity);
+
+        b = getIntent().getExtras();
+        if (b != null) {
+            currentUser = (User) b.getSerializable("currentUser");
+        }
+
         final String noteType = getIntent().getStringExtra(NOTE_TYPE);
         //toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_select_time);
@@ -94,7 +104,8 @@ public class SelectEventTimeActivity extends AppCompatActivity {
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SelectEventTimeActivity.this, Note2MapSearchLocationActivity.class);
+                Intent intent = new Intent(SelectEventTimeActivity.this, Note2MapSelectFriendsActivity.class);
+                intent.putExtra("currentUser", currentUser);
                 intent.putExtra(NOTE_TYPE,noteType);
                 //Append all times pipe separated to the last screen to select location before create it
                 intent.putExtra(NOTE_TIME,

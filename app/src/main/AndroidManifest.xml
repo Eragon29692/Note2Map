@@ -69,6 +69,12 @@
             android:name=".Note2MapChooseUsername"
             android:screenOrientation="portrait">
         </activity>
+
+
+        <activity
+            android:name=".Note2MapSelectFriendsActivity"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".Note2MapChooseNoteType"
             android:screenOrientation="portrait">

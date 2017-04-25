@@ -1,18 +1,5 @@
 package edu.neu.madcourse.priyankabh.note2map;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -21,15 +8,18 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,6 +28,30 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.neu.madcourse.priyankabh.note2map.models.Note;
+import edu.neu.madcourse.priyankabh.note2map.models.NoteContent;
+import edu.neu.madcourse.priyankabh.note2map.models.User;
+
+import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
+import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE_TIME;
 
 public class Note2MapSearchLocationActivity extends FragmentActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
@@ -46,37 +60,105 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
     private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
     private static final String OUT_JSON = "/json";
-
     private static final String API_KEY = "AIzaSyBWHu2v4RKujUpKxPH53UvkIVdhDrnolCU";
-    Marker marker;
+    Marker locationMarker;
+    private AutoCompleteTextView autoCompView;
+    private String noteType;
+    private String noteTime;
+    private String preEditText;
+    private EditText editTextView;
+    private User currentUser;
+    private NoteContent noteContent;
+    private DatabaseReference mDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_search_location_activity);
 
+        noteType = getIntent().getStringExtra(NOTE_TYPE);
+        noteTime = getIntent().getStringExtra(NOTE_TIME);
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.n2m_show_map);
 
         // Getting a reference to the map
         supportMapFragment.getMapAsync(this);
 
-        AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.n2m_autoCompleteTextView);
-
+        autoCompView = (AutoCompleteTextView) findViewById(R.id.n2m_autoCompleteTextView);
         autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.n2m_list_item));
         autoCompView.setOnItemClickListener(this);
 
+        switch (noteType) {
+            case "EVENT":     preEditText = "Event on "+ noteTime.substring(0, 8) +" starting at "+noteTime.substring(9, 16).replace(" ","");
+                break;
+            case "REMINDER":  preEditText = "Remind on "+ noteTime.substring(0, 8) +" at "+noteTime.substring(9, 16).replace(" ","");
+                break;
+            case "DIRECTION": preEditText = "Follow given directions";
+                break;
+        }
+
+        editTextView = (EditText) findViewById(R.id.n2m_edit_note);
+        editTextView.setText(preEditText);
+
+        Button createNote = (Button) findViewById(R.id.n2m_create_note);
+        createNote.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                ArrayList<NoteContent> listofNoteContents = new ArrayList<NoteContent>();
+                listofNoteContents.add(noteContent);
+                // create a note and it the list of notes of the user
+                Note newNote = new Note(noteType, noteTime.substring(0, 8),
+                        noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents);
+                currentUser.notes.add(newNote);
+                mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
+            }
+        });
     }
 
     @Override
     public void onMapClick(LatLng point) {
         MarkerOptions markerOptions;
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> addresses = null;
+        String title="New Marker";
+        try {
+            if (point != null) {
+                addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+            }
+        }catch (IOException ie){
+            ie.printStackTrace();
+        } catch (IllegalArgumentException illegalArgumentException) {
+            // Catch invalid latitude or longitude values.
+            String errorMessage = "Invalid Latitude and Longitude";
+            Log.e("SearchLocationActivity", errorMessage + ". " +
+                    "Latitude = " + point.latitude +
+                    ", Longitude = " +
+                    point.longitude, illegalArgumentException);
+        }
+
+        // Handle case where no address was found.
+        if (addresses == null || addresses.size()  == 0) {
+            Log.d("SearchLocationActivity","No addresses found for given coordinates");
+        } else {
+            Address address = addresses.get(0);
+            ArrayList<String> addressFragments = new ArrayList<String>();
+
+            // Fetch the address lines using getAddressLine,
+            // join them, and send them to the thread.
+            for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                addressFragments.add(address.getAddressLine(i));
+            }
+            title = TextUtils.join(System.getProperty("line.separator"),
+                    addressFragments);
+        }
 
         markerOptions = new MarkerOptions();
         markerOptions.position(point);
-        markerOptions.title("New Marker");
-
-        googleMap.addMarker(markerOptions);
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+        markerOptions.title(title);
+        locationMarker = googleMap.addMarker(markerOptions);
+        locationMarker.showInfoWindow();
 
         //Animating the camera
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -85,15 +167,48 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
 
     @Override
     public void onMapLongClick(LatLng point) {
-
         MarkerOptions markerOptions;
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> addresses = null;
+        String title="New Marker";
+
+        try {
+            if (point != null) {
+                addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+            }
+        }catch (IOException ie){
+            ie.printStackTrace();
+        } catch (IllegalArgumentException illegalArgumentException) {
+            // Catch invalid latitude or longitude values.
+            String errorMessage = "Invalid Latitude and Longitude";
+            Log.e("SearchLocationActivity", errorMessage + ". " +
+                    "Latitude = " + point.latitude +
+                    ", Longitude = " +
+                    point.longitude, illegalArgumentException);
+        }
+
+        // Handle case where no address was found.
+        if (addresses == null || addresses.size()  == 0) {
+            Log.d("SearchLocationActivity","No addresses found for given coordinates");
+        } else {
+            Address address = addresses.get(0);
+            ArrayList<String> addressFragments = new ArrayList<String>();
+
+            // Fetch the address lines using getAddressLine,
+            // join them, and send them to the thread.
+            for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                addressFragments.add(address.getAddressLine(i));
+            }
+            title = TextUtils.join(System.getProperty("line.separator"),
+                    addressFragments);
+        }
 
         markerOptions = new MarkerOptions();
         markerOptions.position(point);
-        markerOptions.title("New Marker");
+        markerOptions.title(title);
 
-        googleMap.addMarker(markerOptions);
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+        locationMarker = googleMap.addMarker(markerOptions);
+        locationMarker.showInfoWindow();
 
         //Animating the camera
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -102,7 +217,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
         getCoordinatesOfLocation(str);
-        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 
     public static ArrayList autocomplete(String input) {
@@ -224,11 +339,24 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
             markerOptions.position(latLng);
             markerOptions.title(location);
 
-            googleMap.addMarker(markerOptions);
+            locationMarker = googleMap.addMarker(markerOptions);
+            locationMarker.showInfoWindow();
+
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
             //Animating the camera
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            autoCompView.setText("");
+            // Check if no view has focus:
+            View view = this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+            preEditText = preEditText + " at "+ location+"...";
+            editTextView.setText(preEditText);
+            noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
         }
         return;
     }
@@ -243,8 +371,19 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         googleMap.setMyLocationEnabled(true);
 
         if (googleMap != null) {
-            googleMap.setOnMapClickListener(this);
-            googleMap.setOnMapLongClickListener(this);
+            if(noteType.equals("EVENT") || noteType.equals("REMINDER")){
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        return true;
+                    }
+                });
+            } else {
+                googleMap.setOnMapClickListener(this);
+                googleMap.setOnMapLongClickListener(this);
+            }
+
         }
+
     }
 }

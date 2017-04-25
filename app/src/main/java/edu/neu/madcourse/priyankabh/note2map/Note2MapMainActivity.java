@@ -8,17 +8,16 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,28 +35,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-
 import java.util.ArrayList;
-import java.util.Map;
-
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 public class Note2MapMainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 200;
 
-    private GoogleApiClient mGoogleApiClient;
-    private Location mCurrentLocation;
-    private LocationRequest mLocationRequest;
-    private boolean mRequestingLocationUpdates = true;
-    private EditText mLatitudeText;
-    private EditText mLongitudeText;
-    private String setLatitude = "";
-    private String setLongitude = "";
-    private TextView mCoordinatesText;
     private DatabaseReference mDatabase;
     Button quitButton;
-    private ValueEventListener valueEventListener;
-    private Button setCoordinates;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private ListView mDrawerList;
@@ -269,6 +254,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
             // action with ID action_refresh was selected
             case R.id.n2m_note_action_menu_new:
                 Intent intent = new Intent(Note2MapMainActivity.this, Note2MapChooseNoteType.class);
+                intent.putExtra("currentUser", currentUser);
                 this.startActivity(intent);
                 break;
             default:
