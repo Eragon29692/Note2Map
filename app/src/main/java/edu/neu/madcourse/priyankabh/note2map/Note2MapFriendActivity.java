@@ -178,7 +178,7 @@ public class Note2MapFriendActivity extends AppCompatActivity {
             intent.putExtra("username", usernames);
             intent.putExtra("currentUser", currentUser);
             startActivity(intent);
-            this.finish();
+            Note2MapFriendActivity.this.finish();
         }
 
         return super.onOptionsItemSelected(item);
