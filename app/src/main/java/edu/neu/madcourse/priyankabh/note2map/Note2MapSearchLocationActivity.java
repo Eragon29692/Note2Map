@@ -8,7 +8,9 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -62,6 +64,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
     private static final String OUT_JSON = "/json";
     private static final String API_KEY = "AIzaSyBWHu2v4RKujUpKxPH53UvkIVdhDrnolCU";
     Marker locationMarker;
+    private ArrayList<Marker> listofLocationMarker;
     private AutoCompleteTextView autoCompView;
     private String noteType;
     private String noteTime;
@@ -70,6 +73,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
     private User currentUser;
     private NoteContent noteContent;
     private DatabaseReference mDatabase;
+    private ArrayList<NoteContent> listofNoteContents;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,12 +105,35 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         editTextView = (EditText) findViewById(R.id.n2m_edit_note);
         editTextView.setText(preEditText);
 
+        editTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (noteContent != null) {
+                    noteContent.noteText = s.toString();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        listofLocationMarker = new ArrayList<>();
+        listofNoteContents = new ArrayList<>();
+
+
         Button createNote = (Button) findViewById(R.id.n2m_create_note);
         createNote.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 mDatabase = FirebaseDatabase.getInstance().getReference();
-                ArrayList<NoteContent> listofNoteContents = new ArrayList<NoteContent>();
+
                 listofNoteContents.add(noteContent);
                 // create a note and it the list of notes of the user
                 Note newNote = new Note(noteType, noteTime.substring(0, 8),
@@ -157,12 +184,18 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         markerOptions = new MarkerOptions();
         markerOptions.position(point);
         markerOptions.title(title);
+        if((noteType.equals("EVENT") || noteType.equals("REMINDER")) && listofLocationMarker.size() == 1) {
+            listofLocationMarker.remove(locationMarker);
+            locationMarker.remove();
+        }
         locationMarker = googleMap.addMarker(markerOptions);
         locationMarker.showInfoWindow();
+        listofLocationMarker.add(locationMarker);
+        noteContent = new NoteContent(addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude(), preEditText);
+        listofNoteContents.add(noteContent);
 
         //Animating the camera
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
     }
 
     @Override
@@ -341,6 +374,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
 
             locationMarker = googleMap.addMarker(markerOptions);
             locationMarker.showInfoWindow();
+            listofLocationMarker.add(locationMarker);
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
@@ -357,6 +391,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
             preEditText = preEditText + " at "+ location+"...";
             editTextView.setText(preEditText);
             noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
+            listofNoteContents.add(noteContent);
         }
         return;
     }
@@ -371,18 +406,18 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         googleMap.setMyLocationEnabled(true);
 
         if (googleMap != null) {
-            if(noteType.equals("EVENT") || noteType.equals("REMINDER")){
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
+                        marker.showInfoWindow();
+                        locationMarker = marker;
+                        noteContent = listofNoteContents.get(listofLocationMarker.indexOf(marker));
+                        editTextView.setText(noteContent.noteText);
                         return true;
                     }
                 });
-            } else {
-                googleMap.setOnMapClickListener(this);
-                googleMap.setOnMapLongClickListener(this);
-            }
-
+            googleMap.setOnMapClickListener(this);
+            googleMap.setOnMapLongClickListener(this);
         }
 
     }
