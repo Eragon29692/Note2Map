@@ -52,11 +52,12 @@ public class Note2MapMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.note2map_activity_main);
+        //setContentView(R.layout.note2map_activity_main);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         //////////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////Slide Menu///////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////
+        /*
         mDrawerLayout = (DrawerLayout) findViewById(R.id.n2m_drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.n2m_left_drawer);
         drawerList = new ArrayList<>();
@@ -95,19 +96,19 @@ public class Note2MapMainActivity extends AppCompatActivity {
         });
 
         mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_close  /* "close drawer" description */
+                this,
+                mDrawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close
         ) {
 
-            /** Called when a drawer has settled in a completely closed state. */
+            //Called when a drawer has settled in a completely closed state.
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 getSupportActionBar().setTitle("Notes");
             }
 
-            /** Called when a drawer has settled in a completely open state. */
+            // Called when a drawer has settled in a completely open state.
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 getSupportActionBar().setTitle(getTitle());
@@ -120,6 +121,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
+        */
         //////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,6 +161,9 @@ public class Note2MapMainActivity extends AppCompatActivity {
                         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                                 SystemClock.elapsedRealtime() +
                                         60 * 1000, 60 * 1000, pending);
+                        Intent intent = new Intent(Note2MapMainActivity.this, Note2MapNotesActivity.class);
+                        intent.putExtra("currentUser", currentUser);
+                        startActivity(intent);
                     } else {
                         Intent intent = new Intent(Note2MapMainActivity.this, Note2MapChooseUsername.class);
                         startActivity(intent);
@@ -202,6 +207,9 @@ public class Note2MapMainActivity extends AppCompatActivity {
                                 alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                                         SystemClock.elapsedRealtime() +
                                                 60 * 1000, 60 * 1000, pending);
+                                Intent intent = new Intent(Note2MapMainActivity.this, Note2MapNotesActivity.class);
+                                intent.putExtra("currentUser", currentUser);
+                                startActivity(intent);
                             } else {
                                 Intent intent = new Intent(Note2MapMainActivity.this, Note2MapChooseUsername.class);
                                 startActivity(intent);
@@ -229,6 +237,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
     //////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////Slide Menu///////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
+    /*
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -268,6 +277,7 @@ public class Note2MapMainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.n2m_note_action_menu, menu);
         return true;
     }
+    */
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////

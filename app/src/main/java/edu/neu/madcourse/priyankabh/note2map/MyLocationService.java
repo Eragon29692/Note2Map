@@ -52,7 +52,7 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
     @Override
     protected void onHandleIntent(Intent intent) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        listOfNotes = new ArrayList<>();
         // Do the task here
         createLocationRequest();
 

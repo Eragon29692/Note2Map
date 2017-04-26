@@ -156,6 +156,10 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
                         noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents, location);
                 currentUser.notes.add(newNote);
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
+                Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
+                intent.putExtra("currentUser", currentUser);
+                startActivity(intent);
+
             }
         });
     }
@@ -207,6 +211,7 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
             noteContent = null;
             locationMarker = null;
         }
+        location = title.replace("\n", " ");
         locationMarker = googleMap.addMarker(markerOptions);
         locationMarker.setDraggable(true);
         locationMarker.showInfoWindow();
