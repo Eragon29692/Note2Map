@@ -10,6 +10,21 @@ public class NoteContent implements Serializable{
     public String noteCoordinates;
     public String noteText;
 
+    public String getNoteCoordinates() {
+        return noteCoordinates;
+    }
+
+    public void setNoteCoordinates(String noteCoordinates) {
+        this.noteCoordinates = noteCoordinates;
+    }
+
+    public String getNoteText() {
+        return noteText;
+    }
+
+    public void setNoteText(String noteText) {
+        this.noteText = noteText;
+    }
 
     public NoteContent(){
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
