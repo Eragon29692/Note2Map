@@ -8,7 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+
 import java.util.ArrayList;
+
+import edu.neu.madcourse.priyankabh.note2map.models.Friend;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
@@ -66,10 +69,20 @@ public class Note2MapSelectFriendsActivity extends AppCompatActivity {
     }
 
     public void onClickChooseFriend(View view){
+        StringBuilder listOffriends = new StringBuilder();
+
+        for (Friend p : customAdapter.getBox()) {
+            if (p.isSelected()){
+                listOffriends.append(p.getName());
+                listOffriends.append(";");
+            }
+        }
+
         Intent intent = new Intent(Note2MapSelectFriendsActivity.this, Note2MapSearchLocationActivity.class);
         intent.putExtra(NOTE_TYPE,noteType);
         intent.putExtra(NOTE_TIME,noteTime);
         intent.putExtra("currentUser", currentUser);
+        intent.putExtra("friends", listOffriends.toString());
         startActivity(intent);
     }
 
