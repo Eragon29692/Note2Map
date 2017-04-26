@@ -6,10 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
-
 import java.util.ArrayList;
-
-import edu.neu.madcourse.priyankabh.note2map.models.Friend;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
@@ -61,16 +58,8 @@ public class Note2MapSelectFriendsActivity extends AppCompatActivity {
     }
 
     public void onClickChooseFriend(View view){
-        String result = "Selected Friends are :";
-        for (Friend p : customAdapter.getBox()) {
-            if (p.isSelected()){
-                result += "\n" + p.getName();
-            }
-        }
-
         Intent intent = new Intent(Note2MapSelectFriendsActivity.this, Note2MapSearchLocationActivity.class);
         intent.putExtra(NOTE_TYPE,noteType);
-                //Append all times pipe separated to the last screen to select location before create it
         intent.putExtra(NOTE_TIME,noteTime);
         intent.putExtra("currentUser", currentUser);
         startActivity(intent);

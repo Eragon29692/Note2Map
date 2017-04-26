@@ -70,6 +70,10 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity android:name=".Note2MapNotesActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
 
         <activity
             android:name=".Note2MapSelectFriendsActivity"

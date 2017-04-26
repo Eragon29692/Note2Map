@@ -2,22 +2,19 @@ package edu.neu.madcourse.priyankabh.note2map;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.support.design.widget.NavigationView;
+import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-
-import android.widget.LinearLayout;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -78,7 +76,9 @@ public class Note2MapFriendActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapter, View v, int position,
                                     long arg3) {
                 if(position == 0) {
-                    Intent intent = new Intent(Note2MapFriendActivity.this, Note2MapMainActivity.class);
+                    //Intent intent = new Intent(Note2MapFriendActivity.this, Note2MapMainActivity.class);
+                    Intent intent = new Intent(Note2MapFriendActivity.this, Note2MapNotesActivity.class);
+                    intent.putExtra("currentUser", currentUser);
                     startActivity(intent);
                     Note2MapFriendActivity.this.finish();
                 }

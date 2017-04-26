@@ -6,4 +6,5 @@
     <color name="gray_color">#bfbfbf</color>
     <color name="black_color">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="viewBg">#f1f5f8</color>
 </resources>

@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,6 +41,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -112,7 +115,7 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
                 listofNoteContents.add(noteContent);
                 // create a note and it the list of notes of the user
                 Note newNote = new Note(noteType, noteTime.substring(0, 8),
-                        noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents);
+                        noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents, location);
                 currentUser.notes.add(newNote);
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
             }
