@@ -117,7 +117,6 @@ public class Note2MapNotesActivity extends AppCompatActivity {
 
         noteList = currentUser.notes;
         if(noteList == null || noteList.size() == 0){
-            errorTextView = (TextView) findViewById(R.id.n2m_addNote_error);
             errorTextView.setVisibility(View.VISIBLE);
         }
 

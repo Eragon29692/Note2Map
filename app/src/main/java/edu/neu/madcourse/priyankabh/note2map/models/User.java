@@ -10,18 +10,18 @@ public class User implements Serializable{
     public String username;
     public ArrayList<String> friends;
     public ArrayList<Note> notes;
+    public String userId;
 
 
     public User(){
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
-        this.friends = new ArrayList<>();
-        this.notes = new ArrayList<>();
     }
 
-    public User(String username){
+    public User(String username, String userId){
         this.username = username;
         this.friends = new ArrayList<>();
         this.notes = new ArrayList<>();
+        this.userId = userId;
     }
 
 }

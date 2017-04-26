@@ -92,7 +92,7 @@ public class Note2MapChooseUsername extends AppCompatActivity {
                     errorTextView.setVisibility(View.VISIBLE);
                     usernameEditText.setText("");
                 } else {
-                    User user = new User(username);
+                    User user = new User(username, FirebaseInstanceId.getInstance().getToken());
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(user);
                     Intent intent = new Intent(Note2MapChooseUsername.this, Note2MapMainActivity.class);
                     startActivity(intent);

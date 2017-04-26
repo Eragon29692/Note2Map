@@ -37,8 +37,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONArray;
@@ -86,6 +89,7 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
     private ArrayList<String> listOftargetedUsers;
     private String location;
     private String targetedUsersExtra;
+    int counterI;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,6 +109,9 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         noteType = getIntent().getStringExtra(NOTE_TYPE);
         noteTime = getIntent().getStringExtra(NOTE_TIME);
         currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        if (currentUser.notes == null) {
+            currentUser.notes = new ArrayList<>();
+        }
 
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.n2m_show_map);
 
@@ -150,7 +157,7 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         listofNoteContents = new ArrayList<>();
         listOftargetedUsers = new ArrayList<>();
 
-        if (targetedUsersExtra != null) {
+        if (targetedUsersExtra == null) {
             targetedUsersExtra = "";
         }
         listOftargetedUsers.addAll(Arrays.asList(targetedUsersExtra.split(";")));
@@ -160,15 +167,36 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
 
 
         Button createNote = (Button) findViewById(R.id.n2m_create_note);
+        counterI = 0;
         createNote.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 //listofNoteContents.add(noteContent);
                 // create a note and it the list of notes of the user
-                Note newNote = new Note(noteType, noteTime.substring(0, 8),
-                        noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents, listOftargetedUsers, location);
+                final Note newNote = new Note(noteType, noteTime.substring(0, 8),
+                        noteTime.substring(9, 16), noteTime.substring(17), "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
                 currentUser.notes.add(newNote);
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
+                for (; counterI < listOftargetedUsers.size(); counterI++) {
+                    //getting the list of notes:
+                    mDatabase.child("users").child(listOftargetedUsers.get(counterI)).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            User user = snapshot.getValue(User.class);
+                            if (user.notes == null) {
+                                user.notes = new ArrayList<Note>();
+                            }
+                            user.notes.add(newNote);
+                            mDatabase.child("users").child(listOftargetedUsers.get(counterI)).setValue(user);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError firebaseError) {
+                        }
+                    });
+                }
+                counterI = 0;
+
                 Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
                 intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
@@ -426,7 +454,6 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
-                preEditText = preEditText + " at "+ location+"...";
                 editTextView.setText(preEditText);
                 noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
                 listofNoteContents.add(noteContent);

@@ -24,6 +24,21 @@
         android:layout_height="match_parent">
 
         <!-- Your content layout goes here -->
+        <TextView
+            android:id="@+id/n2m_no_friend_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="11dp"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="53dp"
+            android:fontFamily="casual"
+            android:gravity="top|center_horizontal"
+            android:text="You have no Friends! \n Add one!"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textStyle="bold"
+            android:visibility="invisible" />
 
         <ListView
             android:id="@+id/n2m_listviewlayout_friends"
