@@ -2,10 +2,11 @@ package edu.neu.madcourse.priyankabh.note2map.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @IgnoreExtraProperties
-public class Note {
+public class Note implements Serializable{
     public String noteId; //initialized with timestamp
     public String noteType;
     public String noteDate;

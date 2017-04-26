@@ -2,16 +2,21 @@ package edu.neu.madcourse.priyankabh.note2map;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -40,13 +45,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.NoteContent;
@@ -55,7 +60,7 @@ import edu.neu.madcourse.priyankabh.note2map.models.User;
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
 import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE_TIME;
 
-public class Note2MapSearchLocationActivity extends FragmentActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+public class Note2MapSearchLocationActivity extends AppCompatActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     GoogleMap googleMap;
     private static final String LOG_TAG = "GoogleAutocomplete";
@@ -74,11 +79,19 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
     private NoteContent noteContent;
     private DatabaseReference mDatabase;
     private ArrayList<NoteContent> listofNoteContents;
+    private String location;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_search_location_activity);
+
+        //toolbar
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_search_location);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Set Up Location");
 
         noteType = getIntent().getStringExtra(NOTE_TYPE);
         noteTime = getIntent().getStringExtra(NOTE_TIME);
@@ -94,11 +107,11 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         autoCompView.setOnItemClickListener(this);
 
         switch (noteType) {
-            case "EVENT":     preEditText = "Event on "+ noteTime.substring(0, 8) +" starting at "+noteTime.substring(9, 16).replace(" ","");
+            case "EVENT":     preEditText = "Event on "+ noteTime.substring(0, 8) +" starting at "+noteTime.substring(9, 16).replace(" ","") + ": ";
                 break;
-            case "REMINDER":  preEditText = "Remind on "+ noteTime.substring(0, 8) +" at "+noteTime.substring(9, 16).replace(" ","");
+            case "REMINDER":  preEditText = "Remind on "+ noteTime.substring(0, 8) +" at "+noteTime.substring(9, 16).replace(" ","") + ": ";
                 break;
-            case "DIRECTION": preEditText = "Follow given directions";
+            case "DIRECTION": preEditText = "Direction:";
                 break;
         }
 
@@ -189,10 +202,12 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
             locationMarker.remove();
         }
         locationMarker = googleMap.addMarker(markerOptions);
+        locationMarker.setDraggable(true);
         locationMarker.showInfoWindow();
         listofLocationMarker.add(locationMarker);
         noteContent = new NoteContent(addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude(), preEditText);
         listofNoteContents.add(noteContent);
+        editTextView.setText(noteContent.noteText);
 
         //Animating the camera
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -249,14 +264,14 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
 
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
-        getCoordinatesOfLocation(str);
-        // Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+        location = str;
+        getCoordinatesOfLocation();
     }
 
     public static ArrayList autocomplete(String input) {
         ArrayList resultList = null;
-
         HttpURLConnection conn = null;
+
         StringBuilder jsonResults = new StringBuilder();
         try {
             StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
@@ -352,46 +367,46 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
         }
     }
 
-    public void getCoordinatesOfLocation(String location) {
+    public void getCoordinatesOfLocation() {
         MarkerOptions markerOptions;
-        List<Address> addressList = null;
+        ArrayList coordinates = null;
 
         if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
             try {
-                addressList = geocoder.getFromLocationName(location, 1);
+                coordinates = new Retrievedata().execute().get();
+            }catch (InterruptedException ie){
+                ie.printStackTrace();
+            } catch (ExecutionException ee){ee.printStackTrace();}
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(coordinates != null){
+                double latitude = Double.parseDouble(coordinates.get(0).toString());
+                double longitude = Double.parseDouble(coordinates.get(1).toString());
+                LatLng latLng = new LatLng(latitude, longitude);
+                markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                markerOptions.title(location);
+
+                locationMarker = googleMap.addMarker(markerOptions);
+                locationMarker.setDraggable(true);
+                locationMarker.showInfoWindow();
+                listofLocationMarker.add(locationMarker);
+
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                //Animating the camera
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                autoCompView.setText("");
+                // Check if no view has focus:
+                View view = this.getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                preEditText = preEditText + " at "+ location+"...";
+                editTextView.setText(preEditText);
+                noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
+                listofNoteContents.add(noteContent);
             }
-            Address address = addressList.get(0);
-            double latitude = address.getLatitude();
-            double longitude = address.getLongitude();
-            LatLng latLng = new LatLng(latitude, longitude);
-            markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title(location);
-
-            locationMarker = googleMap.addMarker(markerOptions);
-            locationMarker.showInfoWindow();
-            listofLocationMarker.add(locationMarker);
-
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-            //Animating the camera
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-            autoCompView.setText("");
-            // Check if no view has focus:
-            View view = this.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-
-            preEditText = preEditText + " at "+ location+"...";
-            editTextView.setText(preEditText);
-            noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
-            listofNoteContents.add(noteContent);
         }
         return;
     }
@@ -416,9 +431,95 @@ public class Note2MapSearchLocationActivity extends FragmentActivity implements 
                         return true;
                     }
                 });
+            googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+
+                @Override
+                public void onMarkerDragStart(Marker marker) {
+                    // TODO Auto-generated method stub
+                    listofNoteContents.remove(listofLocationMarker.indexOf(marker));
+                    listofLocationMarker.remove(marker);
+                    marker.remove();
+                    noteContent = null;
+                    locationMarker = null;
+                    editTextView.setText("");
+                }
+
+                @Override
+                public void onMarkerDragEnd(Marker marker) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onMarkerDrag(Marker marker) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
             googleMap.setOnMapClickListener(this);
-            googleMap.setOnMapLongClickListener(this);
+            //googleMap.setOnMapLongClickListener(this);
         }
 
     }
+
+    class Retrievedata extends AsyncTask<String, Void, ArrayList> {
+        @Override
+        protected ArrayList doInBackground(String... params) {
+            HttpURLConnection conn = null;
+            ArrayList<Object> resList = new ArrayList<Object>();
+            StringBuilder jsonResults = new StringBuilder();
+            try{
+                StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/geocode/json?address="+location.replaceAll(" ","+"));
+                sb.append("&key=" + API_KEY);
+
+                URL url = new URL(sb.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                InputStreamReader in = new InputStreamReader(conn.getInputStream());
+
+                // Load the results into a StringBuilder
+                int read;
+                char[] buff = new char[1024];
+                while ((read = in.read(buff)) != -1) {
+                    jsonResults.append(buff, 0, read);
+                }
+
+            } catch (MalformedURLException e) {
+                Log.e(LOG_TAG, "Error processing Places API URL", e);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error connecting to Places API", e);
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            }
+
+            try {
+                // Create a JSON object hierarchy from the results
+                JSONObject jsonObj = new JSONObject(jsonResults.toString());
+                JSONArray predsJsonArray = jsonObj.getJSONArray("results");
+
+                String lat = predsJsonArray.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getString("lat");
+                String lng = predsJsonArray.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getString("lng");
+                resList.add(0,lat);
+                resList.add(1,lng);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Cannot process JSON results", e);
+            }
+
+            return resList;
+        }
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

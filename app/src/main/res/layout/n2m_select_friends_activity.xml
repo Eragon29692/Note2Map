@@ -34,18 +34,19 @@
             android:layout_height="323dp"
             android:divider="@color/material_blue_grey_800"
             android:dividerHeight="1dp"
-            android:footerDividersEnabled="false" />
+            android:footerDividersEnabled="false"
+        android:layout_weight="0.9"/>
 
         <Button
             android:id="@+id/n2m_select_friends_continue_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="10dp"
             android:background="@android:color/background_dark"
             android:fontFamily="casual"
             android:text="Continue"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:textColor="@android:color/background_light"
             android:textSize="24sp"
             android:textStyle="normal|bold"

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -17,48 +17,70 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="10dp">
 
-        <AutoCompleteTextView
-            android:id="@+id/n2m_autoCompleteTextView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:ems="8"
-            android:hint="Please enter your place">
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:orientation="vertical">
 
-            <requestFocus />
-        </AutoCompleteTextView>
+            <AutoCompleteTextView
+                android:id="@+id/n2m_autoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:ems="8"
+                android:hint="Please enter your place">
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/n2m_show_map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            tools:context=".Note2MapSearchLocationActivity" />
+                <requestFocus />
+            </AutoCompleteTextView>
 
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/n2m_show_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                tools:context=".Note2MapSearchLocationActivity" />
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Note:"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-        <EditText
-            android:id="@+id/n2m_edit_note"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@drawable/n2m_edittext_border"
-            android:gravity="top|left"
-            android:ems="5"/>
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/n2m_create_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Submit Note" />
 
+
+                <EditText
+                    android:id="@+id/n2m_edit_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/n2m_edittext_border"
+                    android:ems="5"
+                    android:gravity="top|left"
+                    android:layout_weight="0.55"/>
+
+                <Button
+                    android:id="@+id/n2m_create_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Save Note"
+                    android:layout_marginBottom="10dp"
+                    android:background="@android:color/background_dark"
+                    android:fontFamily="casual"
+                    android:textStyle="normal|bold"
+                    android:layout_marginTop="15dp"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="24sp"/>
+
+                    </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>

@@ -2,8 +2,10 @@ package edu.neu.madcourse.priyankabh.note2map.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
+
 @IgnoreExtraProperties
-public class NoteContent {
+public class NoteContent implements Serializable{
 
     public String noteCoordinates;
     public String noteText;
