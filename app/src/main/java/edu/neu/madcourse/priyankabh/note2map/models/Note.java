@@ -31,7 +31,7 @@ public class Note implements Serializable{
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public Note(String noteType, String noteDate, String startTime, String duration, Boolean noteReceived, String owner, ArrayList<NoteContent> noteContent, String location) {
+    public Note(String noteType, String noteDate, String startTime, String duration, Boolean noteReceived, String owner, ArrayList<NoteContent> noteContent, ArrayList<String> targetedUsers, String location) {
         this.noteId = Long.toString(System.currentTimeMillis());
         this.noteType = noteType;
         this.noteDate = noteDate;
@@ -41,7 +41,7 @@ public class Note implements Serializable{
         this.location = location;
         this.owner = owner;
         this.noteContents = noteContent;
-        this.targetedUsers = new ArrayList<>();
+        this.targetedUsers = targetedUsers;
     }
 
     public String getNoteType() {

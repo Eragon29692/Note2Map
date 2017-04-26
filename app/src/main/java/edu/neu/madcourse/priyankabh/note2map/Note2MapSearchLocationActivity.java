@@ -53,6 +53,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -82,12 +83,16 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
     private NoteContent noteContent;
     private DatabaseReference mDatabase;
     private ArrayList<NoteContent> listofNoteContents;
+    private ArrayList<String> listOftargetedUsers;
     private String location;
+    private String targetedUsersExtra;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_search_location_activity);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_search_location);
@@ -96,6 +101,7 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("Set Up Location");
 
+        targetedUsersExtra = getIntent().getStringExtra("friends");
         noteType = getIntent().getStringExtra(NOTE_TYPE);
         noteTime = getIntent().getStringExtra(NOTE_TIME);
         currentUser = (User) getIntent().getSerializableExtra("currentUser");
@@ -110,7 +116,7 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         autoCompView.setOnItemClickListener(this);
 
         switch (noteType) {
-            case "EVENT":     preEditText = "Event on "+ noteTime.substring(0, 8) +" starting at "+noteTime.substring(9, 16).replace(" ","") + ": ";
+            case "EVENT":     preEditText = "Event on "+ noteTime.substring(0, 8) +" at "+noteTime.substring(9, 16).replace(" ","") + ": ";
                 break;
             case "REMINDER":  preEditText = "Remind on "+ noteTime.substring(0, 8) +" at "+noteTime.substring(9, 16).replace(" ","") + ": ";
                 break;
@@ -142,18 +148,25 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
 
         listofLocationMarker = new ArrayList<>();
         listofNoteContents = new ArrayList<>();
+        listOftargetedUsers = new ArrayList<>();
+
+        if (targetedUsersExtra != null) {
+            targetedUsersExtra = "";
+        }
+        listOftargetedUsers.addAll(Arrays.asList(targetedUsersExtra.split(";")));
+
+
+
 
 
         Button createNote = (Button) findViewById(R.id.n2m_create_note);
         createNote.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-
                 //listofNoteContents.add(noteContent);
                 // create a note and it the list of notes of the user
                 Note newNote = new Note(noteType, noteTime.substring(0, 8),
-                        noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents, location);
+                        noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents, listOftargetedUsers, location);
                 currentUser.notes.add(newNote);
                 mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
                 Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
