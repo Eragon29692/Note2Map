@@ -60,7 +60,7 @@ import edu.neu.madcourse.priyankabh.note2map.models.User;
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
 import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE_TIME;
 
-public class Note2MapSearchLocationActivity extends AppCompatActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+        public class Note2MapSearchLocationActivity extends AppCompatActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     GoogleMap googleMap;
     private static final String LOG_TAG = "GoogleAutocomplete";
@@ -147,7 +147,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
             public void onClick(View v){
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
-                listofNoteContents.add(noteContent);
+                //listofNoteContents.add(noteContent);
                 // create a note and it the list of notes of the user
                 Note newNote = new Note(noteType, noteTime.substring(0, 8),
                         noteTime.substring(9, 16), noteTime.substring(17), false, currentUser.username, listofNoteContents);
@@ -197,9 +197,12 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         markerOptions = new MarkerOptions();
         markerOptions.position(point);
         markerOptions.title(title);
-        if((noteType.equals("EVENT") || noteType.equals("REMINDER")) && listofLocationMarker.size() == 1) {
+        if((noteType.equals("EVENT") || noteType.equals("REMINDER")) && listofLocationMarker.size() > 0) {
             listofLocationMarker.remove(locationMarker);
+            listofNoteContents.clear();
             locationMarker.remove();
+            noteContent = null;
+            locationMarker = null;
         }
         locationMarker = googleMap.addMarker(markerOptions);
         locationMarker.setDraggable(true);

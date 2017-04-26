@@ -49,29 +49,25 @@ public class Note2MapCustomAdaptorForAllUsers extends ArrayAdapter implements Fi
 
         ImageButton imgButton = (ImageButton) viewRow.findViewById(R.id.n2m_addFriend_button);
         if(currentUser.friends.contains(user.getText().toString().toLowerCase())){
-            imgButton.setBackgroundResource(R.drawable.tick_friend);
+            imgButton.setBackgroundResource(R.drawable.n2m_added_friend_icon);
             imgButton.setClickable(false);
         } else {
-            imgButton.setBackgroundResource(R.drawable.add_friend);
+            imgButton.setBackgroundResource(R.drawable.n2m_not_added_friend_icon);
             imgButton.setClickable(true);
         }
 
-        ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
-        // generate random color
-        int color1 = generator.getRandomColor();
-
         TextDrawable drawable = TextDrawable.builder()
                 .beginConfig()
-                .withBorder(4) /* thickness in px */
+                .withBorder(0) /* thickness in px */
                 .width(60)  // width in px
                 .height(60) // height in px
-                .textColor(Color.BLACK)
+                .textColor(Color.WHITE)
                 .useFont(Typeface.DEFAULT)
                 .fontSize(30) /* size in px */
                 .bold()
                 .toUpperCase()
                 .endConfig()
-                .buildRound(userList.get(i).substring(0, 1), color1);
+                .buildRound(userList.get(i).substring(0, 1), Color.BLACK);
 
         image.setImageDrawable(drawable);
 

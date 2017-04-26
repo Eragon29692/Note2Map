@@ -15,6 +15,10 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:layout_marginBottom="10dp"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"/>
     <ListView
         android:id="@+id/n2m_listviewlayout_allusers"
         android:layout_width="fill_parent"
@@ -22,4 +26,8 @@
         android:divider="@color/material_blue_grey_800"
         android:dividerHeight="1dp"
         android:footerDividersEnabled="false" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"/>
 </LinearLayout>

@@ -44,24 +44,20 @@ public class Note2MapCustomAdaptorForFriends extends ArrayAdapter {
         user.setText(userList.get(i).toUpperCase());
 
         ImageButton imgButton = (ImageButton) viewRow.findViewById(R.id.n2m_removeFriend_button);
-        imgButton.setBackgroundResource(R.drawable.red_cross);
-
-        ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
-        // generate random color
-        int color1 = generator.getRandomColor();
+        //imgButton.setBackgroundResource(R.drawable.n2m_remove_friend_icon);
 
         TextDrawable drawable = TextDrawable.builder()
                 .beginConfig()
-                .withBorder(4) /* thickness in px */
+                .withBorder(0) /* thickness in px */
                 .width(60)  // width in px
                 .height(60) // height in px
-                .textColor(Color.BLACK)
+                .textColor(Color.WHITE)
                 .useFont(Typeface.DEFAULT)
                 .fontSize(30) /* size in px */
                 .bold()
                 .toUpperCase()
                 .endConfig()
-                .buildRound(userList.get(i).substring(0, 1), color1);
+                .buildRound(userList.get(i).substring(0, 1), Color.BLACK);
 
         image.setImageDrawable(drawable);
 

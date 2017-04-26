@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -32,6 +34,12 @@ public class Note2MapSelectFriendsActivity extends AppCompatActivity {
 
         noteType = getIntent().getStringExtra(NOTE_TYPE);
         noteTime = getIntent().getStringExtra(NOTE_TIME);
+
+        //toolbar
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_select_friends);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle("Choose Friend");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         b = getIntent().getExtras();
         if(b!=null){
@@ -74,5 +82,16 @@ public class Note2MapSelectFriendsActivity extends AppCompatActivity {
         intent.putExtra(NOTE_TIME,noteTime);
         intent.putExtra("currentUser", currentUser);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

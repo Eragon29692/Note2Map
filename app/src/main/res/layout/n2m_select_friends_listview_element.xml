@@ -5,21 +5,30 @@
     android:orientation="vertical"
     android:padding="6dip" >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
         <CheckBox
             android:id="@+id/n2m_checkbox_selectFriends"
             style="@android:style/Widget.Holo.CompoundButton.CheckBox"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:focusable="false"
-            android:focusableInTouchMode="false" />
+            android:focusableInTouchMode="false"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/n2m_textview_selectFriends"
             android:layout_width="fill_parent"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_toRightOf="@+id/n2m_checkbox_selectFriends"
             android:layout_marginLeft="20dp"
             android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
-            android:layout_alignBottom="@+id/n2m_checkbox_selectFriends" />
+            android:layout_alignBottom="@+id/n2m_checkbox_selectFriends"
+            android:gravity="center_vertical"
+            android:fontFamily="sans-serif"
+            android:text="NEW" />
+        </LinearLayout>
 
 </RelativeLayout>
