@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
+import static edu.neu.madcourse.priyankabh.note2map.Note2MapMainActivity.isNetworkAvailable;
+
 public class Note2MapFriendActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
@@ -195,8 +197,21 @@ public class Note2MapFriendActivity extends AppCompatActivity {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
         LocalBroadcastManager.getInstance(this).registerReceiver(mybroadcast, intentFilter);
+        if (!isNetworkAvailable(getApplicationContext())) {
+            if(dialog == null){
+                dialog = new Dialog(Note2MapFriendActivity.this);
+                dialog.setContentView(R.layout.internet_connectivity);
+                dialog.setCancelable(false);
+                TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                text.setText("Internet Disconnected");
+                dialog.show();
+            } else if(dialog != null && !dialog.isShowing()){
+                dialog.show();
+            }
+        }
     }
 
+    @Override
     public void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mybroadcast);

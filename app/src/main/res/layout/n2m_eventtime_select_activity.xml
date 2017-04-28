@@ -102,10 +102,16 @@
 
             <Spinner
                 android:id="@+id/endValue"
-                android:layout_width="164dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/endTimeView"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                android:background="@android:color/transparent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textAlignment="gravity"
+                android:gravity="center"/>
 
         </LinearLayout>
 
