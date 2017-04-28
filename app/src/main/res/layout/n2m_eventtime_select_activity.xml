@@ -100,18 +100,13 @@
                 android:text="Duration"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-            <TextView
+            <Spinner
                 android:id="@+id/endValue"
-                android:layout_width="match_parent"
+                android:layout_width="164dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/endTimeView"
-                android:layout_marginTop="10dp"
-                android:fontFamily="casual"
-                android:onClick="showEndTimePickerDialog"
-                android:text="TextView"
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:textSize="36sp"
-                android:textStyle="normal|bold" />
+                android:layout_marginTop="10dp"/>
+
         </LinearLayout>
 
         <Button

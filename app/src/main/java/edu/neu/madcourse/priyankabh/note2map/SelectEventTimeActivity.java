@@ -9,10 +9,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -20,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
@@ -33,9 +36,11 @@ public class SelectEventTimeActivity extends AppCompatActivity {
     final static String NOTE_TIME = "note_time";
     public static TextView datePicker;
     public static TextView startTime;
-    public static TextView endTime;
+    // public static TextView endTime;
+    public static Spinner durationSpinner;
     private Button continueButton;
     private Bundle b;
+    public String duration;
     private User currentUser;
 
     public static class StartTimePickerFragment extends DialogFragment
@@ -64,11 +69,6 @@ public class SelectEventTimeActivity extends AppCompatActivity {
         newFragment.show(getFragmentManager(), "startTimePicker");
     }
 
-    public void showEndTimePickerDialog(View v) {
-        DialogFragment endFragment = new EndTimePickerFragment();
-        endFragment.show(getFragmentManager(), "endTimePicker");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,12 +88,43 @@ public class SelectEventTimeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         startTime = (TextView) findViewById(R.id.startValue);
-        endTime = (TextView) findViewById(R.id.endValue);
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////Dropdown fo duration/////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        durationSpinner = (Spinner) findViewById(R.id.endValue);
+
+        // Create an ArrayAdapter using the string array and a default spinner
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+                .createFromResource(this, R.array.duration_array,
+                        R.layout.n2m_duration_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        staticAdapter
+                .setDropDownViewResource(R.layout.n2m_duration_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        durationSpinner.setAdapter(staticAdapter);
+
+        durationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                duration = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////
 
         Calendar datetime = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH : mm ");
 
-        endTime.setText("0h 0m");
         startTime.setText(simpleDateFormat.format(datetime.getTime()));
 
         datePicker = (TextView) findViewById(R.id.dateValue);
@@ -111,7 +142,7 @@ public class SelectEventTimeActivity extends AppCompatActivity {
                 intent.putExtra(NOTE_TIME,
                         datePicker.getText().toString() + "|" +
                                 startTime.getText().toString() + "|" +
-                                endTime.getText().toString());
+                                duration);
                 startActivity(intent);
             }
         });
@@ -120,35 +151,6 @@ public class SelectEventTimeActivity extends AppCompatActivity {
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
-    }
-
-    public static class EndTimePickerFragment extends DialogFragment
-            implements TimePickerDialog.OnTimeSetListener {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current time as the default values for the picker
-            final Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-
-            // Create a new instance of TimePickerDialog and return it
-            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, 0, 0,
-                    DateFormat.is24HourFormat(getActivity()));
-            return timePickerDialog;
-        }
-
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            Calendar datetime = Calendar.getInstance();
-            datetime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            datetime.set(Calendar.MINUTE, minute);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH : mm");
-            String duration = simpleDateFormat.format(datetime.getTime());
-            duration = (duration.charAt(0) == '0' ? duration.substring(1,2) : duration.substring(0,2)) + "h "
-                    + (duration.charAt(5) == '0' ? duration.substring(6,7) : duration.substring(5,7)) + "m";
-
-            endTime.setText(duration);
-        }
     }
 
     public static class DatePickerFragment extends DialogFragment

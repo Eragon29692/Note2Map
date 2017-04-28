@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -143,12 +144,14 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         }
         listOftargetedUsers.addAll(Arrays.asList(targetedUsersExtra.split(";")));
 
+        // noteTime
+        final String times[] = noteTime.split("[\\|]+");
         switch (noteType) {
             case "EVENT":
-                preEditText = "Event on " + noteTime.substring(0, 8) + " at " + noteTime.substring(9, 16).replace(" ", "") + ": ";
+                preEditText = "Event on " + times[0] + " at " + times[1] + " ";
                 break;
             case "REMINDER":
-                preEditText = "Remind on " + noteTime.substring(0, 8) + " at " + noteTime.substring(9, 16).replace(" ", "") + ": ";
+                preEditText = "Remind on " + times[0] + " at " + times[1] + " ";
                 break;
             case "DIRECTION":
                 preEditText = "Direction:";
@@ -254,8 +257,8 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                 @Override
                 public void onClick(View v) {
                     // create a note and it the list of notes of the user
-                    final Note newNote = new Note(noteType, noteTime.substring(0, 8),
-                            noteTime.substring(9, 16), noteTime.substring(17), "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
+                    final Note newNote = new Note(noteType, times[0],
+                            times[1], times[2], "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
                     currentUser.notes.add(newNote);
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
 
