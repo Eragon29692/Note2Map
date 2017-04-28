@@ -43,14 +43,15 @@ public class Note2MapNotesActivity extends AppCompatActivity {
     private ArrayList<String> drawerList;
     private TextView errorTextView;
     private Dialog dialog;
+    private BroadcastReceiver mybroadcast;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_note_main);
 
-        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+        mybroadcast = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
@@ -75,7 +76,7 @@ public class Note2MapNotesActivity extends AppCompatActivity {
                     }
                 }
             }
-        }, intentFilter);
+        };
 
         errorTextView = (TextView) findViewById(R.id.n2m_addNote_error);
 
@@ -169,6 +170,18 @@ public class Note2MapNotesActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mybroadcast, intentFilter);
+    }
+
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mybroadcast);
     }
 
     @Override

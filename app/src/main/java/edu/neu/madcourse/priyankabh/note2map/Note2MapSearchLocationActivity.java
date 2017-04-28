@@ -137,7 +137,6 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle("Set Up Location");
 
         tapNote = getIntent().getStringExtra("tapOnNote");
         targetedUsersExtra = getIntent().getStringExtra("friends");
@@ -157,6 +156,12 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
 
         if(tapNote == null){
             tapNote = "false";
+        }
+
+        if (tapNote.equals("true")) {
+            getSupportActionBar().setTitle("Note's Details");
+        } else {
+            getSupportActionBar().setTitle("Set Up Location");
         }
 
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.n2m_show_map);
@@ -197,7 +202,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         if(tapNote.equals("true")){
 
             editTextView.setFocusable(false);
-            autoCompView.setFocusable(false);
+            autoCompView.setVisibility(View.INVISIBLE);
             createNote.setText("Delete Note");
 
             createNote.setOnClickListener(new View.OnClickListener() {
@@ -353,6 +358,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         try {
             if (point != null) {
                 addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+                Log.d("ssssss", point.latitude + "," + point.longitude);
             }
         }catch (IOException ie){
             ie.printStackTrace();
@@ -396,7 +402,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         locationMarker.setDraggable(true);
         locationMarker.showInfoWindow();
         listofLocationMarker.add(locationMarker);
-        noteContent = new NoteContent(addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude(), preEditText+" at "+title);
+        noteContent = new NoteContent(addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude(), preEditText+" at "+location);
         listofNoteContents.add(noteContent);
         editTextView.setText(noteContent.noteText);
 
@@ -460,7 +466,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
         location = str;
-        getCoordinatesOfLocation(str);
+        getCoordinatesOfLocation();
     }
 
     public static ArrayList autocomplete(String input) {
@@ -562,13 +568,9 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         }
     }
 
-    public void getCoordinatesOfLocation(String str) {
+    public void getCoordinatesOfLocation() {
         MarkerOptions markerOptions;
         ArrayList coordinates = null;
-
-        if(tapNote.equals("true")){
-            location = str;
-        }
 
         if (location != null || !location.equals("")) {
             try {
@@ -584,6 +586,14 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                 markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
                 markerOptions.title(location);
+
+                if((noteType.equals("EVENT") || noteType.equals("REMINDER")) && listofLocationMarker.size() > 0) {
+                    listofLocationMarker.remove(locationMarker);
+                    listofNoteContents.clear();
+                    locationMarker.remove();
+                    noteContent = null;
+                    locationMarker = null;
+                }
 
                 locationMarker = googleMap.addMarker(markerOptions);
                 locationMarker.showInfoWindow();
@@ -604,9 +614,9 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
-                editTextView.setText(preEditText+" "+ "at "+location);
-                noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
+                noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, preEditText+ " at "+location);
                 listofNoteContents.add(noteContent);
+                editTextView.setText(noteContent.noteText);
             }
         }
         return;
@@ -621,19 +631,14 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         googleMap.setMyLocationEnabled(true);
 
         if (googleMap != null) {
-            if(tapNote.equals("true") && viewLocationExtra != null && !viewLocationExtra.equals("")){
-                getCoordinatesOfLocation(viewLocationExtra);
-                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        return true;
-                    }
-                });
+            if(tapNote.equals("true")){
+                loadNoteLocations();
             }
 
             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
+                    Log.d("aaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                     marker.showInfoWindow();
                     locationMarker = marker;
                     noteContent = listofNoteContents.get(listofLocationMarker.indexOf(marker));
@@ -641,36 +646,105 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                     return true;
                 }
             });
+            if(!tapNote.equals("true")) {
+                //Log.d("aaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
-            googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                    @Override
+                    public void onMarkerDragStart(Marker marker) {
+                        // TODO Auto-generated method stub
+                        listofNoteContents.remove(listofLocationMarker.indexOf(marker));
+                        listofLocationMarker.remove(marker);
+                        marker.remove();
+                        noteContent = null;
+                        locationMarker = null;
+                        editTextView.setText("");
+                    }
 
-                @Override
-                public void onMarkerDragStart(Marker marker) {
-                    // TODO Auto-generated method stub
-                    listofNoteContents.remove(listofLocationMarker.indexOf(marker));
-                    listofLocationMarker.remove(marker);
-                    marker.remove();
-                    noteContent = null;
-                    locationMarker = null;
-                    editTextView.setText("");
-                }
+                    @Override
+                    public void onMarkerDragEnd(Marker marker) {
+                        // TODO Auto-generated method stub
 
-                @Override
-                public void onMarkerDragEnd(Marker marker) {
-                    // TODO Auto-generated method stub
+                    }
 
-                }
+                    @Override
+                    public void onMarkerDrag(Marker marker) {
+                        // TODO Auto-generated method stub
 
-                @Override
-                public void onMarkerDrag(Marker marker) {
-                    // TODO Auto-generated method stub
-
-                }
-            });
+                    }
+                });
+            }
             googleMap.setOnMapClickListener(this);
             //googleMap.setOnMapLongClickListener(this);
         }
 
+    }
+
+    public void loadNoteLocations() {
+        if (receivedNote != null) {
+            for (int k = 0; k < receivedNote.noteContents.size(); k++) {
+                String[] latlongStrings = receivedNote.noteContents.get(k).getNoteCoordinates().split(",");
+                LatLng point = new LatLng(Double.parseDouble(latlongStrings[0]), Double.parseDouble(latlongStrings[1]));
+                MarkerOptions markerOptions;
+                Geocoder geocoder = new Geocoder(this);
+                List<Address> addresses = null;
+                String title="New Marker";
+
+                try {
+                    if (point != null) {
+                        addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+                    }
+                }catch (IOException ie){
+                    ie.printStackTrace();
+                } catch (IllegalArgumentException illegalArgumentException) {
+                    // Catch invalid latitude or longitude values.
+                    String errorMessage = "Invalid Latitude and Longitude";
+                    Log.e("SearchLocationActivity", errorMessage + ". " +
+                            "Latitude = " + point.latitude +
+                            ", Longitude = " +
+                            point.longitude, illegalArgumentException);
+                }
+
+                // Handle case where no address was found.
+                if (addresses == null || addresses.size()  == 0) {
+                    Log.d("SearchLocationActivity","No addresses found for given coordinates");
+                } else {
+                    Address address = addresses.get(0);
+                    ArrayList<String> addressFragments = new ArrayList<String>();
+
+                    // Fetch the address lines using getAddressLine,
+                    // join them, and send them to the thread.
+                    for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                        addressFragments.add(address.getAddressLine(i));
+                    }
+                    title = TextUtils.join(System.getProperty("line.separator"),
+                            addressFragments);
+                }
+
+                markerOptions = new MarkerOptions();
+                markerOptions.position(point);
+                markerOptions.title(title);
+                if((noteType.equals("EVENT") || noteType.equals("REMINDER")) && listofLocationMarker.size() > 0) {
+                    listofLocationMarker.remove(locationMarker);
+                    listofNoteContents.clear();
+                    locationMarker.remove();
+                    noteContent = null;
+                    locationMarker = null;
+                }
+                location = title.replace("\n", " ");
+                locationMarker = googleMap.addMarker(markerOptions);
+                locationMarker.showInfoWindow();
+                listofLocationMarker.add(locationMarker);
+                noteContent = receivedNote.noteContents.get(k);
+                listofNoteContents.add(noteContent);
+                editTextView.setText(noteContent.noteText);
+
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+
+                //Animating the camera
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            }
+        }
     }
 
     class Retrievedata extends AsyncTask<String, Void, ArrayList> {
