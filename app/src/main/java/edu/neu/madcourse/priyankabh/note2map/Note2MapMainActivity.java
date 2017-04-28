@@ -3,20 +3,16 @@ package edu.neu.madcourse.priyankabh.note2map;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,34 +32,6 @@ public class Note2MapMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
-                String networkStatus = isNetworkAvailable ? "connected" : "disconnected";
-                Log.d("networkStatus",networkStatus);
-                if(networkStatus.equals("connected")){
-                    if(dialog!=null && dialog.isShowing()){
-                        dialog.cancel();
-                        dialog.dismiss();
-                        dialog.hide();
-                    }
-                } else {
-                    if(dialog == null){
-                        dialog = new Dialog(Note2MapMainActivity.this);
-                        dialog.setContentView(R.layout.internet_connectivity);
-                        dialog.setCancelable(false);
-                        TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
-                        text.setText("Internet Disconnected");
-                        dialog.show();
-                    } else if(dialog != null && !dialog.isShowing()){
-                        dialog.show();
-                    }
-                }
-            }
-        }, intentFilter);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 

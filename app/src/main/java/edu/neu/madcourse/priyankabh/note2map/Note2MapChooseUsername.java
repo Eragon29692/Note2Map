@@ -45,14 +45,16 @@ public class Note2MapChooseUsername extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
                 String networkStatus = isNetworkAvailable ? "connected" : "disconnected";
-                Log.d("networkStatus",networkStatus);
+                Log.d("networkStatus:username",networkStatus);
                 if(networkStatus.equals("connected")){
+                    Log.d("networkstatus:connected",networkStatus+" dialog "+dialog);
                     if(dialog!=null && dialog.isShowing()){
                         dialog.cancel();
                         dialog.dismiss();
                         dialog.hide();
                     }
                 } else {
+                    Log.d("networkstatus",networkStatus+" dialog "+dialog);
                     if(dialog == null){
                         dialog = new Dialog(Note2MapChooseUsername.this);
                         dialog.setContentView(R.layout.internet_connectivity);
