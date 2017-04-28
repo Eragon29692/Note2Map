@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:elevation="8dp"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".Note2MapMainActivity"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/internet_connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:fontFamily="casual"
+        android:padding="10dp"
+        android:textSize="24sp"
+        android:textStyle="bold|italic"
+        android:textAllCaps="true"/>
+</LinearLayout>

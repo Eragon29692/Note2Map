@@ -1,14 +1,18 @@
 package edu.neu.madcourse.priyankabh.note2map;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -26,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -90,11 +95,40 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
     int counterI;
     private String viewLocationExtra;
     private Note receivedNote;
+    private Dialog dialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_search_location_activity);
+
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
+                String networkStatus = isNetworkAvailable ? "connected" : "disconnected";
+                Log.d("networkStatus",networkStatus);
+                if(networkStatus.equals("connected")){
+                    if(dialog!=null && dialog.isShowing()){
+                        dialog.cancel();
+                        dialog.dismiss();
+                        dialog.hide();
+                    }
+                } else {
+                    if(dialog == null){
+                        dialog = new Dialog(Note2MapSearchLocationActivity.this);
+                        dialog.setContentView(R.layout.internet_connectivity);
+                        dialog.setCancelable(false);
+                        TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                        text.setText("Internet Disconnected");
+                        dialog.show();
+                    } else if(dialog != null && !dialog.isShowing()){
+                        dialog.show();
+                    }
+                }
+            }
+        }, intentFilter);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -259,7 +293,18 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                     // create a note and it the list of notes of the user
                     final Note newNote = new Note(noteType, times[0],
                             times[1], times[2], "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
-                    currentUser.notes.add(newNote);
+                    if(currentUser.notes.size() == 0){
+                        currentUser.notes.add(newNote);
+                    } else {
+                        if(!currentUser.notes.contains(newNote)){
+                            currentUser.notes.add(newNote);
+                        }
+                    /*for (int n = 0; n < currentUser.notes.size(); n++) {
+                        if (!currentUser.notes.get(n).getNoteId().equals(newNote.getNoteId())) {
+                            currentUser.notes.add(newNote);
+                        }
+                    }*/
+                    }
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
 
                     for (; counterI < listOftargetedUsers.size(); counterI++) {
@@ -269,11 +314,12 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
                                 User user = snapshot.getValue(User.class);
-                                if(user.userId.equals(addNotestoTargetUsers)) {
+                                if(user.userId.equals(addNotestoTargetUsers) && !currentUser.userId.equals(addNotestoTargetUsers)) {
                                     if (user.notes == null) {
                                         user.notes = new ArrayList<Note>();
                                     }
                                     user.notes.add(newNote);
+
                                     mDatabase.child("users").child(addNotestoTargetUsers).setValue(user);
                                 }
                             }
@@ -350,7 +396,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         locationMarker.setDraggable(true);
         locationMarker.showInfoWindow();
         listofLocationMarker.add(locationMarker);
-        noteContent = new NoteContent(addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude(), preEditText);
+        noteContent = new NoteContent(addresses.get(0).getLatitude() + "," + addresses.get(0).getLongitude(), preEditText+" at "+title);
         listofNoteContents.add(noteContent);
         editTextView.setText(noteContent.noteText);
 
@@ -558,7 +604,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
-                editTextView.setText(preEditText);
+                editTextView.setText(preEditText+" "+ "at "+location);
                 noteContent = new NoteContent(latLng.latitude+","+latLng.longitude, editTextView.getText().toString());
                 listofNoteContents.add(noteContent);
             }
@@ -575,7 +621,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
         googleMap.setMyLocationEnabled(true);
 
         if (googleMap != null) {
-            if(tapNote.equals("true")){
+            if(tapNote.equals("true") && viewLocationExtra != null && !viewLocationExtra.equals("")){
                 getCoordinatesOfLocation(viewLocationExtra);
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override

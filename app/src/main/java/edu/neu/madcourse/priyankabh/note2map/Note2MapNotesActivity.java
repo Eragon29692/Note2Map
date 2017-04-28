@@ -1,8 +1,13 @@
 package edu.neu.madcourse.priyankabh.note2map;
 
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,11 +42,40 @@ public class Note2MapNotesActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private ArrayList<String> drawerList;
     private TextView errorTextView;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_note_main);
+
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
+                String networkStatus = isNetworkAvailable ? "connected" : "disconnected";
+                Log.d("networkStatus",networkStatus);
+                if(networkStatus.equals("connected")){
+                    if(dialog!=null && dialog.isShowing()){
+                        dialog.cancel();
+                        dialog.dismiss();
+                        dialog.hide();
+                    }
+                } else {
+                    if(dialog == null){
+                        dialog = new Dialog(Note2MapNotesActivity.this);
+                        dialog.setContentView(R.layout.internet_connectivity);
+                        dialog.setCancelable(false);
+                        TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                        text.setText("Internet Disconnected");
+                        dialog.show();
+                    } else if(dialog != null && !dialog.isShowing()){
+                        dialog.show();
+                    }
+                }
+            }
+        }, intentFilter);
 
         errorTextView = (TextView) findViewById(R.id.n2m_addNote_error);
 
@@ -114,7 +149,15 @@ public class Note2MapNotesActivity extends AppCompatActivity {
 
         noteList = new ArrayList<>();
 
-        noteList = currentUser.notes;
+        if(currentUser.notes!=null) {
+            for (int i = 0; i < currentUser.notes.size(); i++) {
+                if (currentUser.notes.get(i).getOwner().equals(currentUser.username) || currentUser.notes.get(i).getNoteReceived().equals("received")) {
+                    noteList.add(currentUser.notes.get(i));
+                }
+            }
+        }
+
+        //noteList = currentUser.notes;
         if(noteList == null || noteList.size() == 0){
             errorTextView.setVisibility(View.VISIBLE);
         }
