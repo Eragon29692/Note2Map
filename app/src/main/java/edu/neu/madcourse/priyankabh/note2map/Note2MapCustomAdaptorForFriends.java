@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +26,9 @@ public class Note2MapCustomAdaptorForFriends extends ArrayAdapter {
         this.currentUser = user;
         this.context = applicationContext;
         this.userList = user.friends;
+        if(this.userList.contains(currentUser.username)){
+            this.userList.remove(currentUser.username);
+        }
     }
 
     @Override
@@ -39,9 +41,6 @@ public class Note2MapCustomAdaptorForFriends extends ArrayAdapter {
         TextView user = (TextView) viewRow.findViewById(R.id.n2m_element_friends);
         ImageView image = (ImageView) viewRow.findViewById(R.id.n2m_user_image);
         user.setText(userList.get(i).toUpperCase());
-
-        ImageButton imgButton = (ImageButton) viewRow.findViewById(R.id.n2m_removeFriend_button);
-        //imgButton.setBackgroundResource(R.drawable.n2m_remove_friend_icon);
 
         TextDrawable drawable = TextDrawable.builder()
                 .beginConfig()

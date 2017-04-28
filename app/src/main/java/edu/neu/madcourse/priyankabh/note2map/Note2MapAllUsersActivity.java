@@ -9,12 +9,11 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
-
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 /**
@@ -80,9 +78,6 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
             currentUser.friends.add(newFriend.toLowerCase());
         }
         mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
-        for(String str: currentUser.friends){
-            Log.d("onClickAddFriend",str);
-        }
 
         customAdapter = new Note2MapCustomAdaptorForAllUsers(this, usernames, currentUser);
         listView.setAdapter(customAdapter);

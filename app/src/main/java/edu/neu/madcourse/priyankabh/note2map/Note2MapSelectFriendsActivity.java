@@ -16,7 +16,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-
 import edu.neu.madcourse.priyankabh.note2map.models.Friend;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
@@ -25,7 +24,6 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
 
 public class Note2MapSelectFriendsActivity extends AppCompatActivity {
 
-    private ArrayList<String> usernames;
     private User currentUser;
     private ListView listView;
     private String noteTime;
