@@ -24,7 +24,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textStyle="bold"
         android:visibility="invisible" />
-    
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/n2m_note_recycler_view"
         android:layout_width="match_parent"

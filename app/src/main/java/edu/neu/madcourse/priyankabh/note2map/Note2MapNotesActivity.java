@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 

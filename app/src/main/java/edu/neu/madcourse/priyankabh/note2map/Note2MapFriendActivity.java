@@ -27,7 +27,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.Map;
-
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 public class Note2MapFriendActivity extends AppCompatActivity {
@@ -77,7 +76,6 @@ public class Note2MapFriendActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapter, View v, int position,
                                     long arg3) {
                 if(position == 0) {
-                    //Intent intent = new Intent(Note2MapFriendActivity.this, Note2MapMainActivity.class);
                     Intent intent = new Intent(Note2MapFriendActivity.this, Note2MapNotesActivity.class);
                     intent.putExtra("currentUser", currentUser);
                     startActivity(intent);
@@ -195,9 +193,6 @@ public class Note2MapFriendActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //MenuItem item = menu.findItem(R.id.add_friend);
-        //item.setVisible(true);
-
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.friend_menu, menu);
         MenuItem item = menu.findItem(R.id.n2m_friend_add_friend);

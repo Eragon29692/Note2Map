@@ -10,7 +10,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
-
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
@@ -43,18 +42,18 @@ public class Note2MapNotesAdaptor extends RecyclerView.Adapter<Note2MapNotesAdap
                 public void onClick(View view) {
                     int itemPosition=getAdapterPosition();
                     Note item = noteList.get(itemPosition);
-                    if(currentUser.username.equals(item.getOwner())){
-                        Intent intent = new Intent(mContext, Note2MapSearchLocationActivity.class);
-                        intent.putExtra(NOTE_TIME,
-                                item.getNoteDate().toString() + "|" +
-                                        item.getStartTime().toString() + "|" +
-                                        item.getDuration().toString());
-                        intent.putExtra("currentUser",currentUser);
-                        intent.putExtra(NOTE_TYPE,item.getNoteType());
-                        mContext.startActivity(intent);
-                    } else{
-                        return;
-                    }
+
+                    Intent intent = new Intent(mContext, Note2MapSearchLocationActivity.class);
+                    intent.putExtra(NOTE_TIME,
+                            item.getNoteDate().toString() + "|" +
+                                    item.getStartTime().toString() + "|" +
+                                    item.getDuration().toString());
+                    intent.putExtra("currentUser",currentUser);
+                    intent.putExtra("tapOnNote", "true");
+                    intent.putExtra("viewLocation", item.getLocation());
+                    intent.putExtra(NOTE_TYPE,item.getNoteType());
+                    intent.putExtra("chosenNote", item);
+                    mContext.startActivity(intent);
                 }
             });
         }

@@ -96,8 +96,17 @@ public class Note implements Serializable{
         return targetedUsers;
     }
 
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(String noteId) {
+        this.noteId = noteId;
+    }
+
     public void setTargetedUsers(ArrayList<String> targetedUsers) {
         this.targetedUsers = targetedUsers;
+
     }
 
     public ArrayList<NoteContent> getNoteContents() {

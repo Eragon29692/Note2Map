@@ -11,7 +11,6 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
 import edu.neu.madcourse.priyankabh.note2map.models.Friend;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 

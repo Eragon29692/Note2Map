@@ -8,9 +8,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -28,7 +26,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,7 +47,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -67,7 +63,7 @@ import edu.neu.madcourse.priyankabh.note2map.models.User;
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
 import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE_TIME;
 
-        public class Note2MapSearchLocationActivity extends AppCompatActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+public class Note2MapSearchLocationActivity extends AppCompatActivity implements OnItemClickListener,OnMapReadyCallback,GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     GoogleMap googleMap;
     private static final String LOG_TAG = "GoogleAutocomplete";
@@ -89,7 +85,10 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
     private ArrayList<String> listOftargetedUsers;
     private String location;
     private String targetedUsersExtra;
+    private String tapNote;
     int counterI;
+    private String viewLocationExtra;
+    private Note receivedNote;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,53 +104,35 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("Set Up Location");
 
+        tapNote = getIntent().getStringExtra("tapOnNote");
         targetedUsersExtra = getIntent().getStringExtra("friends");
         noteType = getIntent().getStringExtra(NOTE_TYPE);
         noteTime = getIntent().getStringExtra(NOTE_TIME);
         currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        viewLocationExtra = getIntent().getStringExtra("viewLocation");
+        receivedNote = (Note) getIntent().getSerializableExtra("chosenNote");
+
+        if(viewLocationExtra == null){
+            viewLocationExtra ="";
+        }
+
         if (currentUser.notes == null) {
             currentUser.notes = new ArrayList<>();
         }
 
+        if(tapNote == null){
+            tapNote = "false";
+        }
+
         SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.n2m_show_map);
+        autoCompView = (AutoCompleteTextView) findViewById(R.id.n2m_autoCompleteTextView);
 
         // Getting a reference to the map
         supportMapFragment.getMapAsync(this);
 
-        autoCompView = (AutoCompleteTextView) findViewById(R.id.n2m_autoCompleteTextView);
-        autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.n2m_list_item));
-        autoCompView.setOnItemClickListener(this);
-
-        switch (noteType) {
-            case "EVENT":     preEditText = "Event on "+ noteTime.substring(0, 8) +" at "+noteTime.substring(9, 16).replace(" ","") + ": ";
-                break;
-            case "REMINDER":  preEditText = "Remind on "+ noteTime.substring(0, 8) +" at "+noteTime.substring(9, 16).replace(" ","") + ": ";
-                break;
-            case "DIRECTION": preEditText = "Direction:";
-                break;
-        }
-
         editTextView = (EditText) findViewById(R.id.n2m_edit_note);
-        editTextView.setText(preEditText);
+        Button createNote = (Button) findViewById(R.id.n2m_create_note);
 
-        editTextView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (noteContent != null) {
-                    noteContent.noteText = s.toString();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
 
         listofLocationMarker = new ArrayList<>();
         listofNoteContents = new ArrayList<>();
@@ -162,47 +143,152 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         }
         listOftargetedUsers.addAll(Arrays.asList(targetedUsersExtra.split(";")));
 
+        switch (noteType) {
+            case "EVENT":
+                preEditText = "Event on " + noteTime.substring(0, 8) + " at " + noteTime.substring(9, 16).replace(" ", "") + ": ";
+                break;
+            case "REMINDER":
+                preEditText = "Remind on " + noteTime.substring(0, 8) + " at " + noteTime.substring(9, 16).replace(" ", "") + ": ";
+                break;
+            case "DIRECTION":
+                preEditText = "Direction:";
+                break;
+        }
 
+        editTextView.setText(preEditText);
 
+        if(tapNote.equals("true")){
 
+            editTextView.setFocusable(false);
+            autoCompView.setFocusable(false);
+            createNote.setText("Delete Note");
 
-        Button createNote = (Button) findViewById(R.id.n2m_create_note);
-        counterI = 0;
-        createNote.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                //listofNoteContents.add(noteContent);
-                // create a note and it the list of notes of the user
-                final Note newNote = new Note(noteType, noteTime.substring(0, 8),
-                        noteTime.substring(9, 16), noteTime.substring(17), "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
-                currentUser.notes.add(newNote);
-                mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
-                for (; counterI < listOftargetedUsers.size(); counterI++) {
-                    //getting the list of notes:
-                    mDatabase.child("users").child(listOftargetedUsers.get(counterI)).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            User user = snapshot.getValue(User.class);
-                            if (user.notes == null) {
-                                user.notes = new ArrayList<Note>();
+            createNote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(receivedNote.getOwner().equals(currentUser.username)){
+
+                        for(int n = 0; n< currentUser.notes.size();n++) {
+                            if(currentUser.notes.get(n).getNoteId().equals(receivedNote.getNoteId())) {
+                                counterI = 0;
+                                //ArrayList<String> deleteTargetUsers  = new ArrayList<String>();
+                                final ArrayList<String> deleteTargetUsers = currentUser.notes.get(n).getTargetedUsers();
+                                for(; counterI <deleteTargetUsers.size();counterI++){
+                                    final String deleteNotefromUser = deleteTargetUsers.get(counterI);
+                                    //getting the list of notes:
+                                    mDatabase.child("users").child(deleteNotefromUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot snapshot) {
+                                            User user = snapshot.getValue(User.class);
+                                            if (user.notes == null) {
+                                                user.notes = new ArrayList<Note>();
+                                            }
+                                            for(int k = 0; k< user.notes.size();k++) {
+                                                if(user.notes.get(k).getNoteId().equals(receivedNote.getNoteId())) {
+                                                    user.notes.remove(k);
+                                                }
+                                            }
+                                            mDatabase.child("users").child(deleteNotefromUser).setValue(user);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError firebaseError) {
+                                        }
+                                    });
+                                }
+                                currentUser.notes.remove(n);
+
                             }
-                            user.notes.add(newNote);
-                            mDatabase.child("users").child(listOftargetedUsers.get(counterI)).setValue(user);
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError firebaseError) {
                         }
-                    });
+                        counterI = 0;
+                        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
+                        Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
+                        intent.putExtra("currentUser", currentUser);
+                        startActivity(intent);
+
+                    } else{
+                        //just delete it from his notes list
+                        for(int n = 0; n< currentUser.notes.size();n++) {
+                            if(currentUser.notes.get(n).getNoteId().equals(receivedNote.getNoteId())) {
+                                currentUser.notes.remove(n);
+                            }
+                        }
+                        mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
+                    }
+
+                    Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
+                    intent.putExtra("currentUser", currentUser);
+                    startActivity(intent);
+
                 }
-                counterI = 0;
+            });
 
-                Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
-                intent.putExtra("currentUser", currentUser);
-                startActivity(intent);
+        } else {
 
-            }
-        });
+            autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.n2m_list_item));
+            autoCompView.setOnItemClickListener(this);
+
+            editTextView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (noteContent != null) {
+                        noteContent.noteText = s.toString();
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
+
+            counterI = 0;
+            createNote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // create a note and it the list of notes of the user
+                    final Note newNote = new Note(noteType, noteTime.substring(0, 8),
+                            noteTime.substring(9, 16), noteTime.substring(17), "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
+                    currentUser.notes.add(newNote);
+                    mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
+
+                    for (; counterI < listOftargetedUsers.size(); counterI++) {
+                        final String addNotestoTargetUsers = listOftargetedUsers.get(counterI);
+                        //getting the list of notes:
+                        mDatabase.child("users").child(addNotestoTargetUsers).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
+                                User user = snapshot.getValue(User.class);
+                                if(user.userId.equals(addNotestoTargetUsers)) {
+                                    if (user.notes == null) {
+                                        user.notes = new ArrayList<Note>();
+                                    }
+                                    user.notes.add(newNote);
+                                    mDatabase.child("users").child(addNotestoTargetUsers).setValue(user);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError firebaseError) {
+                            }
+                        });
+                    }
+                    counterI = 0;
+
+                    Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
+                    intent.putExtra("currentUser", currentUser);
+                    startActivity(intent);
+
+                }
+            });
+        }
     }
 
     @Override
@@ -211,6 +297,10 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         Geocoder geocoder = new Geocoder(this);
         List<Address> addresses = null;
         String title="New Marker";
+
+        if(tapNote.equals("true")) {
+            return;
+        }
         try {
             if (point != null) {
                 addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
@@ -272,6 +362,10 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         List<Address> addresses = null;
         String title="New Marker";
 
+        if(tapNote.equals("true")) {
+            return;
+        }
+
         try {
             if (point != null) {
                 addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
@@ -317,7 +411,7 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
     public void onItemClick(AdapterView adapterView, View view, int position, long id) {
         String str = (String) adapterView.getItemAtPosition(position);
         location = str;
-        getCoordinatesOfLocation();
+        getCoordinatesOfLocation(str);
     }
 
     public static ArrayList autocomplete(String input) {
@@ -419,9 +513,13 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
         }
     }
 
-    public void getCoordinatesOfLocation() {
+    public void getCoordinatesOfLocation(String str) {
         MarkerOptions markerOptions;
         ArrayList coordinates = null;
+
+        if(tapNote.equals("true")){
+            location = str;
+        }
 
         if (location != null || !location.equals("")) {
             try {
@@ -439,15 +537,18 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
                 markerOptions.title(location);
 
                 locationMarker = googleMap.addMarker(markerOptions);
-                locationMarker.setDraggable(true);
                 locationMarker.showInfoWindow();
-                listofLocationMarker.add(locationMarker);
+                if(tapNote.equals("false")) {
+                    locationMarker.setDraggable(true);
+                    listofLocationMarker.add(locationMarker);
+                }
 
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                 //Animating the camera
                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                 autoCompView.setText("");
+
                 // Check if no view has focus:
                 View view = this.getCurrentFocus();
                 if (view != null) {
@@ -465,23 +566,33 @@ import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE
     @Override
     public void onMapReady(GoogleMap gMap) {
         googleMap = gMap;
-        // Add a marker in Sydney and move the camera
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         googleMap.setMyLocationEnabled(true);
 
         if (googleMap != null) {
+            if(tapNote.equals("true")){
+                getCoordinatesOfLocation(viewLocationExtra);
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        marker.showInfoWindow();
-                        locationMarker = marker;
-                        noteContent = listofNoteContents.get(listofLocationMarker.indexOf(marker));
-                        editTextView.setText(noteContent.noteText);
                         return true;
                     }
                 });
+            }
+
+            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    marker.showInfoWindow();
+                    locationMarker = marker;
+                    noteContent = listofNoteContents.get(listofLocationMarker.indexOf(marker));
+                    editTextView.setText(noteContent.noteText);
+                    return true;
+                }
+            });
+
             googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
                 @Override
