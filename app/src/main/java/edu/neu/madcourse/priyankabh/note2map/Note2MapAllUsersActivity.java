@@ -46,6 +46,7 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.n2m_listview_allusers);
 
         IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
@@ -74,8 +75,6 @@ public class Note2MapAllUsersActivity extends AppCompatActivity {
                 }
             }
         }, intentFilter);
-
-        setContentView(R.layout.n2m_listview_allusers);
 
         //toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.n2m_my_toolbar_allusers);
