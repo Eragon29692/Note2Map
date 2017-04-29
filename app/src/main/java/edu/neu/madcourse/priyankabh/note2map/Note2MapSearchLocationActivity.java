@@ -300,7 +300,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                     // create a note and it the list of notes of the user
                     final Note newNote = new Note(noteType, times[0],
                             times[1], times[2], "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
-                    if(listOftargetedUsers.contains(currentUser.userId)) {
+                    //if(listOftargetedUsers.contains(currentUser.userId)) {
                         if (currentUser.notes.size() == 0) {
                             currentUser.notes.add(newNote);
                         } else {
@@ -313,7 +313,7 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                         }
                     }*/
                         }
-                    }
+                    //}
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
 
                     for (; counterI < listOftargetedUsers.size(); counterI++) {
