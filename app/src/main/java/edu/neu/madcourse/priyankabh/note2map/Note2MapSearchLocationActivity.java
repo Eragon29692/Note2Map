@@ -60,7 +60,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.NoteContent;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
@@ -292,41 +291,45 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                     // create a note and it the list of notes of the user
                     final Note newNote = new Note(noteType, times[0],
                             times[1], times[2], "notReceived", currentUser.username, listofNoteContents, listOftargetedUsers, location);
-                    if(currentUser.notes.size() == 0){
-                        currentUser.notes.add(newNote);
-                    } else {
-                        if(!currentUser.notes.contains(newNote)){
+                    if(listOftargetedUsers.contains(currentUser.userId)) {
+                        if (currentUser.notes.size() == 0) {
                             currentUser.notes.add(newNote);
-                        }
+                        } else {
+                            if (!currentUser.notes.contains(newNote)) {
+                                currentUser.notes.add(newNote);
+                            }
                     /*for (int n = 0; n < currentUser.notes.size(); n++) {
                         if (!currentUser.notes.get(n).getNoteId().equals(newNote.getNoteId())) {
                             currentUser.notes.add(newNote);
                         }
                     }*/
+                        }
                     }
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
 
                     for (; counterI < listOftargetedUsers.size(); counterI++) {
                         final String addNotestoTargetUsers = listOftargetedUsers.get(counterI);
                         //getting the list of notes:
-                        mDatabase.child("users").child(addNotestoTargetUsers).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                User user = snapshot.getValue(User.class);
-                                if(user.userId.equals(addNotestoTargetUsers) && !currentUser.userId.equals(addNotestoTargetUsers)) {
-                                    if (user.notes == null) {
-                                        user.notes = new ArrayList<Note>();
+                        if(addNotestoTargetUsers != "") {
+                            mDatabase.child("users").child(addNotestoTargetUsers).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    User user = snapshot.getValue(User.class);
+                                    if (user.userId.equals(addNotestoTargetUsers) && !currentUser.userId.equals(addNotestoTargetUsers)) {
+                                        if (user.notes == null) {
+                                            user.notes = new ArrayList<Note>();
+                                        }
+                                        user.notes.add(newNote);
+
+                                        mDatabase.child("users").child(addNotestoTargetUsers).setValue(user);
                                     }
-                                    user.notes.add(newNote);
-
-                                    mDatabase.child("users").child(addNotestoTargetUsers).setValue(user);
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(DatabaseError firebaseError) {
-                            }
-                        });
+                                @Override
+                                public void onCancelled(DatabaseError firebaseError) {
+                                }
+                            });
+                        }
                     }
                     counterI = 0;
 
