@@ -315,30 +315,35 @@ public class Note2MapSearchLocationActivity extends AppCompatActivity implements
                     }
                     mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).setValue(currentUser);
 
-                    for (; counterI < listOftargetedUsers.size(); counterI++) {
-                        final String addNotestoTargetUsers = listOftargetedUsers.get(counterI);
-                        //getting the list of notes:
-                        mDatabase.child("users").child(addNotestoTargetUsers).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                User user = snapshot.getValue(User.class);
-                                if(user.userId.equals(addNotestoTargetUsers) && !currentUser.userId.equals(addNotestoTargetUsers)) {
-                                    if (user.notes == null) {
-                                        user.notes = new ArrayList<Note>();
+                    Log.d("listhere", listOftargetedUsers.toString() );
+                    if (listOftargetedUsers.size() != 0) {
+
+                        for (; counterI < listOftargetedUsers.size(); counterI++) {
+                            final String addNotestoTargetUsers = listOftargetedUsers.get(counterI);
+                            Log.d("empty?",addNotestoTargetUsers);
+                            //getting the list of notes:
+                            mDatabase.child("users").child(addNotestoTargetUsers).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    User user = snapshot.getValue(User.class);
+                                    Log.d("ssssda",currentUser.userId);
+                                    if (user.userId.equals(addNotestoTargetUsers) && !currentUser.userId.equals(addNotestoTargetUsers)) {
+                                        if (user.notes == null) {
+                                            user.notes = new ArrayList<Note>();
+                                        }
+                                        user.notes.add(newNote);
+
+                                        mDatabase.child("users").child(addNotestoTargetUsers).setValue(user);
                                     }
-                                    user.notes.add(newNote);
-
-                                    mDatabase.child("users").child(addNotestoTargetUsers).setValue(user);
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(DatabaseError firebaseError) {
-                            }
-                        });
+                                @Override
+                                public void onCancelled(DatabaseError firebaseError) {
+                                }
+                            });
+                        }
+                        counterI = 0;
                     }
-                    counterI = 0;
-
                     Intent intent = new Intent(Note2MapSearchLocationActivity.this, Note2MapNotesActivity.class);
                     intent.putExtra("currentUser", currentUser);
                     startActivity(intent);

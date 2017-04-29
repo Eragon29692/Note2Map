@@ -36,7 +36,9 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@android:color/black"/>
+                android:background="@android:color/black"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"/>
 
             <TextView
                 android:id="@+id/n2m_note_owner"
