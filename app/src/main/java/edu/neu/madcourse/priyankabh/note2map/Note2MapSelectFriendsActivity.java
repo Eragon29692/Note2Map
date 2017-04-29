@@ -27,6 +27,7 @@ import edu.neu.madcourse.priyankabh.note2map.models.Friend;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
+import static edu.neu.madcourse.priyankabh.note2map.Note2MapMainActivity.isNetworkAvailable;
 import static edu.neu.madcourse.priyankabh.note2map.SelectEventTimeActivity.NOTE_TIME;
 
 public class Note2MapSelectFriendsActivity extends AppCompatActivity {
@@ -41,14 +42,14 @@ public class Note2MapSelectFriendsActivity extends AppCompatActivity {
     private ChildEventListener childEventListener;
     private ArrayList<User> listOfUsers;
     private Dialog dialog;
+    private BroadcastReceiver mybroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_select_friends_activity);
 
-        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+        mybroadcast = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
@@ -73,8 +74,7 @@ public class Note2MapSelectFriendsActivity extends AppCompatActivity {
                     }
                 }
             }
-        }, intentFilter);
-
+        };
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         noteType = getIntent().getStringExtra(NOTE_TYPE);
@@ -128,12 +128,27 @@ public class Note2MapSelectFriendsActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         mDatabase.child("users").addChildEventListener(childEventListener);
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mybroadcast, intentFilter);
+        if (!isNetworkAvailable(getApplicationContext())) {
+            if(dialog == null){
+                dialog = new Dialog(Note2MapSelectFriendsActivity.this);
+                dialog.setContentView(R.layout.internet_connectivity);
+                dialog.setCancelable(false);
+                TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                text.setText("Internet Disconnected");
+                dialog.show();
+            } else if(dialog != null && !dialog.isShowing()){
+                dialog.show();
+            }
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mDatabase.child("users").removeEventListener(childEventListener);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mybroadcast);
     }
 
     @Override

@@ -1,12 +1,18 @@
 package edu.neu.madcourse.priyankabh.note2map;
 
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
+import static edu.neu.madcourse.priyankabh.note2map.Note2MapMainActivity.isNetworkAvailable;
+
 public class Note2MapFriendActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
@@ -42,6 +50,8 @@ public class Note2MapFriendActivity extends AppCompatActivity {
     private ListView listView;
     private Button quitButton;
     private TextView noFriendTextView;
+    private Dialog dialog;
+    private BroadcastReceiver mybroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +64,32 @@ public class Note2MapFriendActivity extends AppCompatActivity {
             currentUser = (User) b.getSerializable("currentUser");
         }
 
+        mybroadcast = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
+                String networkStatus = isNetworkAvailable ? "connected" : "disconnected";
+                Log.d("networkStatus",networkStatus);
+                if(networkStatus.equals("connected")){
+                    if(dialog!=null && dialog.isShowing()){
+                        dialog.cancel();
+                        dialog.dismiss();
+                        dialog.hide();
+                    }
+                } else {
+                    if(dialog == null){
+                        dialog = new Dialog(Note2MapFriendActivity.this);
+                        dialog.setContentView(R.layout.internet_connectivity);
+                        dialog.setCancelable(false);
+                        TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                        text.setText("Internet Disconnected");
+                        dialog.show();
+                    } else if(dialog != null && !dialog.isShowing()){
+                        dialog.show();
+                    }
+                }
+            }
+        };
         //navigation bar
         mDrawerLayout = (DrawerLayout) findViewById(R.id.n2m_drawer_layout_friend);
         mDrawerList = (ListView) findViewById(R.id.n2m_left_drawer_friend);
@@ -157,8 +193,28 @@ public class Note2MapFriendActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mybroadcast, intentFilter);
+        if (!isNetworkAvailable(getApplicationContext())) {
+            if(dialog == null){
+                dialog = new Dialog(Note2MapFriendActivity.this);
+                dialog.setContentView(R.layout.internet_connectivity);
+                dialog.setCancelable(false);
+                TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                text.setText("Internet Disconnected");
+                dialog.show();
+            } else if(dialog != null && !dialog.isShowing()){
+                dialog.show();
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mybroadcast);
     }
 
     @Override

@@ -31,6 +31,7 @@ import java.util.TimeZone;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
 import static edu.neu.madcourse.priyankabh.note2map.Note2MapChooseNoteType.NOTE_TYPE;
+import static edu.neu.madcourse.priyankabh.note2map.Note2MapMainActivity.isNetworkAvailable;
 
 /**
  * Created by priya on 4/11/2017.
@@ -41,6 +42,7 @@ public class SelectEventTimeActivity extends AppCompatActivity {
     public static TextView datePicker;
     public static TextView startTime;
     private Dialog dialog;
+    private BroadcastReceiver mybroadcast;
     public static Spinner durationSpinner;
     private Button continueButton;
     private Bundle b;
@@ -78,8 +80,7 @@ public class SelectEventTimeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_eventtime_select_activity);
 
-        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+        mybroadcast = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
@@ -104,7 +105,7 @@ public class SelectEventTimeActivity extends AppCompatActivity {
                     }
                 }
             }
-        }, intentFilter);
+        };
 
         b = getIntent().getExtras();
         if (b != null) {
@@ -217,6 +218,31 @@ public class SelectEventTimeActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mybroadcast, intentFilter);
+        if (!isNetworkAvailable(getApplicationContext())) {
+            if(dialog == null){
+                dialog = new Dialog(SelectEventTimeActivity.this);
+                dialog.setContentView(R.layout.internet_connectivity);
+                dialog.setCancelable(false);
+                TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                text.setText("Internet Disconnected");
+                dialog.show();
+            } else if(dialog != null && !dialog.isShowing()){
+                dialog.show();
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mybroadcast);
     }
 }
 

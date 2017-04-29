@@ -30,6 +30,8 @@ import java.util.List;
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.User;
 
+import static edu.neu.madcourse.priyankabh.note2map.Note2MapMainActivity.isNetworkAvailable;
+
 public class Note2MapNotesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -43,14 +45,15 @@ public class Note2MapNotesActivity extends AppCompatActivity {
     private ArrayList<String> drawerList;
     private TextView errorTextView;
     private Dialog dialog;
+    private BroadcastReceiver mybroadcast;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.n2m_note_main);
 
-        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
+        mybroadcast = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
@@ -75,7 +78,7 @@ public class Note2MapNotesActivity extends AppCompatActivity {
                     }
                 }
             }
-        }, intentFilter);
+        };
 
         errorTextView = (TextView) findViewById(R.id.n2m_addNote_error);
 
@@ -171,6 +174,30 @@ public class Note2MapNotesActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mybroadcast, intentFilter);
+        if (!isNetworkAvailable(getApplicationContext())) {
+            if(dialog == null){
+                dialog = new Dialog(Note2MapNotesActivity.this);
+                dialog.setContentView(R.layout.internet_connectivity);
+                dialog.setCancelable(false);
+                TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                text.setText("Internet Disconnected");
+                dialog.show();
+            } else if(dialog != null && !dialog.isShowing()){
+                dialog.show();
+            }
+        }
+    }
+
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mybroadcast);
     }
 
     @Override

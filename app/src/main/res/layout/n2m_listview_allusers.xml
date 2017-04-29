@@ -12,13 +12,8 @@
         android:background="@android:color/background_light"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:layout_marginBottom="10dp"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black"/>
     <ListView
         android:id="@+id/n2m_listviewlayout_allusers"
         android:layout_width="fill_parent"

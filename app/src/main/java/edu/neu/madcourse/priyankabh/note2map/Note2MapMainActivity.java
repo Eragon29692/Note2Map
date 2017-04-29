@@ -3,16 +3,22 @@ package edu.neu.madcourse.priyankabh.note2map;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,10 +34,42 @@ public class Note2MapMainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private User currentUser;
     private Dialog dialog;
+    private BroadcastReceiver mybroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.note2map_activity_main);
+
+        mybroadcast = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isNetworkAvailable = intent.getBooleanExtra(Note2MapDetectNetworkActivity.IS_NETWORK_AVAILABLE, false);
+                String networkStatus = isNetworkAvailable ? "connected" : "disconnected";
+                Log.d("networkStatus:Notes",networkStatus);
+                if(networkStatus.equals("connected")){
+                    if(dialog!=null && dialog.isShowing()){
+                        dialog.cancel();
+                        dialog.dismiss();
+                        dialog.hide();
+                        Intent intentAgain = new Intent(Note2MapMainActivity.this, Note2MapMainActivity.class);
+                        startActivity(intentAgain);
+                        Note2MapMainActivity.this.finish();
+                    }
+                } else {
+                    if(dialog == null){
+                        dialog = new Dialog(Note2MapMainActivity.this);
+                        dialog.setContentView(R.layout.internet_connectivity);
+                        dialog.setCancelable(false);
+                        TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                        text.setText("Internet Disconnected");
+                        dialog.show();
+                    } else if(dialog != null && !dialog.isShowing()){
+                        dialog.show();
+                    }
+                }
+            }
+        };
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -84,6 +122,49 @@ public class Note2MapMainActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(Note2MapDetectNetworkActivity.NETWORK_AVAILABLE_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mybroadcast, intentFilter);
+        if (!isNetworkAvailable(getApplicationContext())) {
+            if(dialog == null){
+                dialog = new Dialog(Note2MapMainActivity.this);
+                dialog.setContentView(R.layout.internet_connectivity);
+                dialog.setCancelable(false);
+                TextView text = (TextView) dialog.findViewById(R.id.internet_connection);
+                text.setText("Internet Disconnected");
+                dialog.show();
+            } else if(dialog != null && !dialog.isShowing()){
+                dialog.show();
+            }
+        }
+    }
+
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mybroadcast);
+    }
+
+    public static boolean isNetworkAvailable(Context context)
+    {
+        ConnectivityManager connec = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connec.getActiveNetworkInfo();
+        if (activeNetwork != null) { // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                return true;
+
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // connected to the mobile provider's data plan
+                return true;
+            }
+        } else {
+            // not connected to the internet
+            return false;
+        }
+        return false;
     }
 
     @Override
