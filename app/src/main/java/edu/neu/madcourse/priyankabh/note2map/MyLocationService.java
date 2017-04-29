@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -27,7 +29,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.NoteContent;
@@ -121,9 +129,9 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
     public void onLocationChanged(Location location) {
         if (timer > 0) {
             mCurrentLocation = location;
-            Log.d("locationchangeService", "Long: " + String.valueOf(mCurrentLocation.getLatitude()) + ", Lat: " + String.valueOf(mCurrentLocation.getLongitude()));
-            mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("coordinates").setValue(Integer.toString(timer) + ") Long: " + String.valueOf(mCurrentLocation.getLatitude()) + ", Lat: " + String.valueOf(mCurrentLocation.getLongitude()));
-            Log.d("note", Integer.toString(listOfNotes.size()));
+            //Log.d("locationchangeService", "Long: " + String.valueOf(mCurrentLocation.getLatitude()) + ", Lat: " + String.valueOf(mCurrentLocation.getLongitude()));
+            //mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("coordinates").setValue(Integer.toString(timer) + ") Long: " + String.valueOf(mCurrentLocation.getLatitude()) + ", Lat: " + String.valueOf(mCurrentLocation.getLongitude()));
+            //Log.d("note", Integer.toString(listOfNotes.size()));
             checkDistance();
             timer--;
             try {
@@ -133,7 +141,7 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
             }
         } else {
             mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("notes").setValue(listOfNotes);
-            Log.d("StoppingService", "");
+            //Log.d("StoppingService", "");
             stopLocationUpdates();
             stopSelf();
         }
@@ -151,7 +159,7 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
 
     private void checkDistance() {
         for (int i = 0; i < listOfNotes.size(); i++) {
-            Log.d("listNull", Integer.toString(listOfNotes.size()));
+            Note note = listOfNotes.get(i);
             if (listOfNotes.get(i).noteContents == null) {
                 listOfNotes.get(i).noteContents = new ArrayList<>();
             }
@@ -161,15 +169,46 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
                     noteContent.noteReceived = "notReceived";
                 }
                 if (noteContent.noteReceived.equals("received")) {
+                    Log.d("note", "note received");
                     continue;
+                }
+                if( !note.targetedUsers.contains(FirebaseInstanceId.getInstance().getToken())) {
+                    Log.d("note", "you own this");
+                    continue;
+                }
+                DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+                Date startTime;
+                try {
+                    int duration = Integer.parseInt(note.getDuration().substring(0, note.duration.indexOf(" ")));
+                    startTime = df.parse(note.getNoteDate() + " " + note.getStartTime().replaceAll(" ", ""));
+                    Calendar cal = Calendar.getInstance(); // creates calendar
+                    Date currentTime = cal.getTime();
+                    cal.setTime(startTime); // sets calendar time/date
+                    cal.add(Calendar.HOUR_OF_DAY, duration); // adds one hour
+                    Date endTime = cal.getTime();
+                    String newDateString1 = df.format(startTime);
+                    String newDateString2 = df.format(endTime);
+                    String newDateString3 = df.format(currentTime);
+                    //Log.d("startTime", newDateString1);
+                    //Log.d("endTime", newDateString2);
+                    //Log.d("currentTime", newDateString3);
+
+                    if (currentTime.before(startTime) || currentTime.after(endTime)) {
+                        Log.d("note", "too late");
+                        continue;
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
                 String latLongString[] = noteContent.getNoteCoordinates().split(",");
                 Double distance = distanceBetweenCoordinates(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), Double.parseDouble(latLongString[0]),Double.parseDouble(latLongString[1]));
-                Log.d("distance", Double.toString(distance));
+                //Log.d("distance", Double.toString(distance));
                 if (distance < 0.15) {
-                    sendNotification(listOfNotes.get(i).owner, noteContent.getNoteText());
+                    sendNotification(listOfNotes.get(i).owner, note.noteType + ": \nOn " + note.getNoteDate() + " at " + note.getStartTime() + "\n" + noteContent.getNoteText());
                     noteContent.noteReceived = "received";
                     listOfNotes.get(i).noteContents.get(k).noteReceived = "received";
+                    listOfNotes.get(i).noteReceived = "received";
                 }
             }
         }
@@ -206,6 +245,9 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
         // use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
 
+        //Define sound URI
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
     // build notification
     // the addAction re-use the same intent to keep the example short
         Notification n  = new Notification.Builder(this)
@@ -213,14 +255,16 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
                 .setContentText(message)
                 .setSmallIcon(R.drawable.add_icon)
                 .setContentIntent(pIntent)
-                .setAutoCancel(true).getNotification();
+                .setAutoCancel(true)
+                .setSound(soundUri).getNotification(); //This sets the sound to play
 
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0, n);
+        Random random = new Random();
+        int m = random.nextInt(1000);
+        notificationManager.notify(m, n);
         Log.d("notification", message);
     }
-
 }

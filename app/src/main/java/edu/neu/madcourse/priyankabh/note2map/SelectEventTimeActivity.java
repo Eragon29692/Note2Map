@@ -65,8 +65,16 @@ public class SelectEventTimeActivity extends AppCompatActivity {
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            startTime.setText(new StringBuilder().append(hourOfDay).append(" : ")
-                    .append(minute));
+            String hourS = "";
+            String minuteS = "";
+            if (hourOfDay < 10) {
+                hourS = "0" + hourOfDay;
+            }
+            if (minute < 10) {
+                minuteS = "0" + minute;
+            }
+            startTime.setText(new StringBuilder().append(hourS).append(" : ")
+                    .append(minuteS));
         }
     }
 
