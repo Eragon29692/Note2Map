@@ -35,7 +35,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
+import java.util.TimeZone;
 
 import edu.neu.madcourse.priyankabh.note2map.models.Note;
 import edu.neu.madcourse.priyankabh.note2map.models.NoteContent;
@@ -135,7 +137,7 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
             checkDistance();
             timer--;
             try {
-                Thread.sleep(2000);                 //1000 milliseconds is one second.
+                Thread.sleep(6000);                 //1000 milliseconds is one second.
             } catch(InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
@@ -177,21 +179,33 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
                     continue;
                 }
                 DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+                df.setTimeZone(TimeZone.getTimeZone("EST"));
                 Date startTime;
                 try {
                     int duration = Integer.parseInt(note.getDuration().substring(0, note.duration.indexOf(" ")));
                     startTime = df.parse(note.getNoteDate() + " " + note.getStartTime().replaceAll(" ", ""));
-                    Calendar cal = Calendar.getInstance(); // creates calendar
-                    Date currentTime = cal.getTime();
+                    Calendar cal;
+                    cal = Calendar.getInstance();  // creates calendar
+                    String month = new SimpleDateFormat("MM").format(cal.getTime()).toString();
+
+                    String day = new SimpleDateFormat("dd").format(cal.getTime()).toString();
+
+                    String year = new SimpleDateFormat("yy").format(cal.getTime()).toString();
+
+                    String hour = new SimpleDateFormat("HH").format(cal.getTime()).toString();
+
+                    String minute = new SimpleDateFormat("mm").format(cal.getTime()).toString();
+
+                    Date currentTime = df.parse( month + "/" + day + "/" + year + " " + hour + ":" + minute);
                     cal.setTime(startTime); // sets calendar time/date
                     cal.add(Calendar.HOUR_OF_DAY, duration); // adds one hour
                     Date endTime = cal.getTime();
                     String newDateString1 = df.format(startTime);
                     String newDateString2 = df.format(endTime);
                     String newDateString3 = df.format(currentTime);
-                    //Log.d("startTime", newDateString1);
-                    //Log.d("endTime", newDateString2);
-                    //Log.d("currentTime", newDateString3);
+                    Log.d("startTime", newDateString1);
+                    Log.d("endTime", newDateString2);
+                    Log.d("currentTime", newDateString3);
 
                     if (currentTime.before(startTime) || currentTime.after(endTime)) {
                         Log.d("note", "too late");
@@ -262,9 +276,7 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        Random random = new Random();
-        int m = random.nextInt(1000);
-        notificationManager.notify(m, n);
+        notificationManager.notify(message.hashCode(), n);
         Log.d("notification", message);
     }
 }
