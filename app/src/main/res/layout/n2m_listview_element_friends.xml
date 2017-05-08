@@ -40,7 +40,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:onClick="onClickRemoveFriend"
-            android:background="@drawable/n2m_remove_friend_icon"
+            android:background="@drawable/ic_trash_can"
             android:layout_margin="15dp"
             android:padding="10dp"/>
     </LinearLayout>

@@ -136,14 +136,12 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
             //Log.d("note", Integer.toString(listOfNotes.size()));
             checkDistance();
             timer--;
-            try {
-                Thread.sleep(6000);                 //1000 milliseconds is one second.
-            } catch(InterruptedException ex) {
-                Thread.currentThread().interrupt();
-            }
+
         } else {
-            mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("notes").setValue(listOfNotes);
-            //Log.d("StoppingService", "");
+            if (listOfNotes != null && listOfNotes.size() != 0) {
+                mDatabase.child("users").child(FirebaseInstanceId.getInstance().getToken()).child("notes").setValue(listOfNotes);
+            }
+                //Log.d("StoppingService", "");
             stopLocationUpdates();
             stopSelf();
         }
@@ -190,7 +188,7 @@ public class MyLocationService extends IntentService implements GoogleApiClient.
 
                     String day = new SimpleDateFormat("dd").format(cal.getTime()).toString();
 
-                    String year = new SimpleDateFormat("yy").format(cal.getTime()).toString();
+                    String year = new SimpleDateFormat("yyyy").format(cal.getTime());
 
                     String hour = new SimpleDateFormat("HH").format(cal.getTime()).toString();
 

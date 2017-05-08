@@ -65,8 +65,8 @@ public class SelectEventTimeActivity extends AppCompatActivity {
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            String hourS = "";
-            String minuteS = "";
+            String hourS = Integer.toString(hourOfDay);
+            String minuteS = Integer.toString(minute);
             if (hourOfDay < 10) {
                 hourS = "0" + hourOfDay;
             }
@@ -169,7 +169,7 @@ public class SelectEventTimeActivity extends AppCompatActivity {
         startTime.setText(simpleDateFormat.format(datetime.getTime()));
 
         datePicker = (TextView) findViewById(R.id.dateValue);
-        String date = new SimpleDateFormat("MM/dd/yy").format(new Date());
+        String date = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
         datePicker.setText(date);
 
         continueButton = (Button) findViewById(R.id.n2m_select_time_continue_button);
